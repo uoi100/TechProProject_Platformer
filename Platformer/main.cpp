@@ -1,5 +1,4 @@
 #include <Windows.h>
-#include <GLFW\glfw3.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -24,7 +23,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
         exit(EXIT_FAILURE);
     }
 
-    glfwSetKeyCallback(window.getWindow(), keyInput_callback);   
+    glfwSetKeyCallback(window.getWindow(), keyInput_callback);
 
     while (!glfwWindowShouldClose(window.getWindow()))
     {

@@ -1,4 +1,5 @@
 #define GLFW_INCLUDE_GLU
+#include <GL\glew.h>
 #include <GLFW/glfw3.h>
 
 class GameWindow
@@ -7,6 +8,7 @@ private:
     GLfloat width_;
     GLfloat height_;
     GLFWwindow* window_;
+    GLuint vertexBufferID_;
 public:
     GLFWwindow* getWindow();
 

@@ -1,17 +1,42 @@
 #include "GameWindow.h"
 #include <string>
 
+struct VertexData{
+    GLfloat positionCoordinates[3];
+};
+
+VertexData vertices[] = {
+        { 0.0f, 0.0f, 0.0f },
+        { 100.0f, 0.0f, 0.0f },
+        { 100.0f, 100.0f, 0.0f },
+        { 0.0f, 100.0f, 0.0f } };
+
 GLFWwindow* GameWindow::getWindow(){
     return window_;
 }
 
 GameWindow::GameWindow(GLfloat width, GLfloat height, const char* winTitle):
-width_{ width }, height_{ height }{
+width_{ width }, height_{ height }, vertexBufferID_{ 0 }{
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     window_ = glfwCreateWindow(width_, height_, winTitle, NULL, NULL);
+
+    if (!window_)
+    {
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
+
     glViewport(0, 0, width_, height_);
 
     glfwMakeContextCurrent(window_);
+
+    //Glew Init must be initialized after a Context is set.
+    glewExperimental = GL_TRUE;
+    GLenum err = glewInit();
+    if (err != GLEW_OK){
+        fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+    }
+
     glfwSwapInterval(1);
 
     // Set the current matrix to the GL_PROJECTION matrix
@@ -26,8 +51,27 @@ width_{ width }, height_{ height }{
     // Which is basically for our objects to be drawn and then translated onto our projection
     glMatrixMode(GL_MODELVIEW);
 
+    // Create a name buffer object for vertexBufferID
+    glGenBuffers(1, &vertexBufferID_);
+    // Sets an array buffer pointed at vertexBufferID
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID_);
+    // Adds the data of vertices into the buffer for static drawing operations
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // Allows the client to use vertex arrays
+    glEnableClientState(GL_VERTEX_ARRAY);
+    
+    // Lets the drawing know the size of the array, what data type it should expect,
+    // the size of the struct, and an offset of the struct and the member that will be read.
+    glVertexPointer(3, GL_FLOAT, sizeof(VertexData),
+        (GLvoid *)offsetof(VertexData, positionCoordinates));
+    
+
 }
 
+/*
+ * Description: Main drawing operations will be here.
+ */
 void GameWindow::render(){
     //glfwGetFramebufferSize(window_, &width, &height);
 
@@ -35,12 +79,16 @@ void GameWindow::render(){
     glClear(GL_COLOR_BUFFER_BIT);
 
     glColor3d(0.0f, 0.0f, 1.0f);
+
+    glDrawArrays(GL_QUADS, 0, 4);
+    /*
     glBegin(GL_QUADS);
     glVertex2d(0.0f, 0.0f);
     glVertex2d(100.0f, 0.0f);
     glVertex2d(100.0f, 100.0f);
     glVertex2d(0.0f, 100.0f);
     glEnd();
+    */
 
     glfwSwapBuffers(window_);
     glfwPollEvents();
