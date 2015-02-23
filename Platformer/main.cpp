@@ -1,55 +1,37 @@
+#include <Windows.h>
 #include <GLFW\glfw3.h>
 
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "GameWindow.h"
+
 void error_callback(int error, const char* description);
 static void keyInput_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-int main(){
-    GLFWwindow* window;
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow ){
 
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-    window = glfwCreateWindow(640, 480, "Platformer", NULL, NULL);
+    GameWindow window(800*16/9, 800, "PlatformerGame");
 
-    if (!window)
+    if (!window.getWindow())
     {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
 
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
+    glfwSetKeyCallback(window.getWindow(), keyInput_callback);   
 
-    glfwSetKeyCallback(window, keyInput_callback);   
-
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(window.getWindow()))
     {
-        int width, height;
-
-        glfwGetFramebufferSize(window, &width, &height);
-
-        glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        glLoadIdentity();
-        glBegin(GL_QUADS);
-        glVertex2d(-0.5f, -0.5f);
-        glVertex2d(0.5f, -0.5f);
-        glVertex2d(0.5f, 0.5f);
-        glVertex2d(-0.5f, 0.5f);
-        glEnd();
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        window.render();
     }
 
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(window.getWindow());
 
     glfwTerminate();
     exit(EXIT_SUCCESS);
