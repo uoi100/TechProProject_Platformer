@@ -5,6 +5,7 @@ struct VertexData{
     GLfloat positionCoordinates[3];
 };
 
+// VertexData of a 100x100 Square
 VertexData vertices[] = {
         { 0.0f, 0.0f, 0.0f },
         { 100.0f, 0.0f, 0.0f },
@@ -26,6 +27,7 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }{
         exit(EXIT_FAILURE);
     }
 
+    //Specifies the area that will be drawn
     glViewport(0, 0, width_, height_);
 
     glfwMakeContextCurrent(window_);
@@ -45,7 +47,8 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }{
     // replace the current matrix with the identity matrix
     glLoadIdentity();
     // Defines a 2D orthographic projection matrix
-    // basically the clipping plane of how things will be drawn
+    // basically the clipping plane which "clips out" things that would be
+    // drawn outside as we would not see it anyways.
     gluOrtho2D(0, width_, 0, height_);
     // Set the current matrix to the GL_MODELVIEW matrix
     // Which is basically for our objects to be drawn and then translated onto our projection
@@ -81,14 +84,6 @@ void GameWindow::render(){
     glColor3d(0.0f, 0.0f, 1.0f);
 
     glDrawArrays(GL_QUADS, 0, 4);
-    /*
-    glBegin(GL_QUADS);
-    glVertex2d(0.0f, 0.0f);
-    glVertex2d(100.0f, 0.0f);
-    glVertex2d(100.0f, 100.0f);
-    glVertex2d(0.0f, 100.0f);
-    glEnd();
-    */
 
     glfwSwapBuffers(window_);
     glfwPollEvents();
