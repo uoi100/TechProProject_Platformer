@@ -22,7 +22,5 @@ void PlayerSprite::update(){
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_RIGHT)
         && position_.x <= boundingBox_.right - width_)
         position_ = addVector2D(position_, makeVector2D(4.0f, 0.0f));
-
-    rotation_ -= 35;
 }
 

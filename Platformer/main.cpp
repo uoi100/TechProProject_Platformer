@@ -7,11 +7,14 @@
 
 #define Updates_Per_Second 60
 
+GameWindow* gameWindow;
+
 void error_callback(int error, const char* description);
 static void keyInput_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
+
 void mouseEvent(GLFWwindow* window, int button, int action, int mods){
-    ((GameWindow*)window)->mouseEvent(button, action);
+    gameWindow->mouseEvent(button, action);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow ){
@@ -20,11 +23,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    GameWindow window(800*16/9, 800, "PlatformerGame");
+    gameWindow = new GameWindow(800*16/9, 800, "PlatformerGame");
 
     glfwSetMouseButtonCallback(glfwGetCurrentContext(), mouseEvent);
 
-    if (!window.getWindow())
+    if (!gameWindow->getWindow())
     {
         glfwTerminate();
         exit(EXIT_FAILURE);
@@ -36,19 +39,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
     double lastTime = glfwGetTime();
     double deltaTime = 0.0f;
 
-    while (!glfwWindowShouldClose(window.getWindow()))
+    while (!glfwWindowShouldClose(gameWindow->getWindow()))
     {
-        window.render();
+        gameWindow->render();
 
         deltaTime += (glfwGetTime() - lastTime) * Updates_Per_Second;
         lastTime = glfwGetTime();
         while (deltaTime >= 1.0f){
-            window.update();
+            gameWindow->update();
             --deltaTime;
         }
     }
 
-    glfwDestroyWindow(window.getWindow());
+    glfwDestroyWindow(gameWindow->getWindow());
+    delete gameWindow;
 
     glfwTerminate();
     exit(EXIT_SUCCESS);

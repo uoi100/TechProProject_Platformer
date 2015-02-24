@@ -117,37 +117,29 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
     setupGL(width_, height_, winTitle);
 
     textureBufferID_ = loadAndBufferImage("./Image/test.png");
+    ballBufferID_ = loadAndBufferImage("./Image/test.png");
 
-    renderArray_ = new std::vector < Sprite* > ;
+    ballsArray_ = new std::vector < Sprite* >;
 
-    PlayerSprite* player = new PlayerSprite(textureBufferID_, makeVector2D(500,500), 80, 120);
-    player->setBoundingBox(makeBoundingBox(height_, 0, 0, width_));
-    renderArray_->push_back(player);
-
-    Sprite* character = new Sprite(textureBufferID_, makeVector2D(700, 400), 80, 120);
-    //character->setVelocity(makeVector2D(0.1f, 0.1f));
-    renderArray_->push_back(character);
+    player_ = new PlayerSprite(textureBufferID_, makeVector2D(500,500), 80, 120);
+    player_->setBoundingBox(makeBoundingBox(height_, 0, 0, width_));
 }
 
 GameWindow::~GameWindow(){
-    for (std::vector<Sprite*>::iterator spriteIterator = renderArray_->begin();
-        spriteIterator != renderArray_->end(); spriteIterator++)
+    for (std::vector<Sprite*>::iterator spriteIterator = ballsArray_->begin();
+        spriteIterator != ballsArray_->end(); spriteIterator++)
     {
         delete (*spriteIterator);
     }
-    delete renderArray_;
+    delete ballsArray_;
 }
 
 void GameWindow::mouseEvent(int button, int action){
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
-        double x;
-        double y;
-        std::ostringstream oss;
-        glfwGetCursorPos(glfwGetCurrentContext(), &x, &y);        
-        y = 800 - y;
-        oss << "X: " << x << " Y: " << y << std::endl;
-        OutputDebugString(oss.str().c_str());
+        Sprite* ball = new Sprite(ballBufferID_, player_->getPosition(), 80, 120);
+        ball->setVelocity(makeVector2D(10, 0));
+        ballsArray_->push_back(ball);
     }
 }
 
@@ -167,8 +159,10 @@ void GameWindow::render(){
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    for (std::vector<Sprite*>::iterator spriteIterator = renderArray_->begin();
-        spriteIterator != renderArray_->end(); spriteIterator++)
+    player_->render();
+
+    for (std::vector<Sprite*>::iterator spriteIterator = ballsArray_->begin();
+        spriteIterator != ballsArray_->end(); spriteIterator++)
     {
         (*spriteIterator)->render();
     }
@@ -178,9 +172,12 @@ void GameWindow::render(){
 }
 
 void GameWindow::update(){
-    for (std::vector<Sprite*>::iterator spriteIterator = renderArray_->begin();
-        spriteIterator != renderArray_->end(); spriteIterator++)
+    player_->update();
+
+    for (std::vector<Sprite*>::iterator spriteIterator = ballsArray_->begin();
+        spriteIterator != ballsArray_->end(); spriteIterator++)
     {
+        (*spriteIterator)->setRotation((*spriteIterator)->getRotation() + 35);
         (*spriteIterator)->update();
     }
 
