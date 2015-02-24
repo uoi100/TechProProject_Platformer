@@ -2,6 +2,7 @@
 #include <GL\glew.h>
 #include <GLFW/glfw3.h>
 #include <SOIL.h>
+#include "Sprite.h"
 
 class GameWindow
 {
@@ -11,6 +12,8 @@ private:
     GLFWwindow* window_;
     GLuint vertexBufferID_;
     GLuint textureBufferID_;
+    Sprite *player_;
+
     GLuint loadAndBufferImage(const char* fileName);
 public:
     GLFWwindow* getWindow();

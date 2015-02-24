@@ -6,18 +6,19 @@ struct VertexData{
     GLfloat textureCoordinates[2];
 };
 
-// VertexData of a 100x100 Square
+// VertexData of a 80x120 Square
 VertexData vertices[] = {
         {{ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }},     // Bottom-Left
-        {{ 480.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }},   // Bottom-Right
-        {{ 480.0f, 800.0f, 0.0f }, { 1.0f, 1.0f }}, // Top-Right
-        {{ 0.0f, 800.0f, 0.0f }, { 0.0f, 1.0f }}    // Top-Left
+        {{ 80.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }},   // Bottom-Right
+        {{ 80.0f, 120.0f, 0.0f }, { 1.0f, 1.0f }}, // Top-Right
+        {{ 0.0f, 120.0f, 0.0f }, { 0.0f, 1.0f }}    // Top-Left
 };
 
 GLFWwindow* GameWindow::getWindow(){
     return window_;
 }
 
+// We want to render load and buffer images for drawing
 GLuint GameWindow::loadAndBufferImage(const char* fileName){
 
     GLuint textureBufferID = SOIL_load_OGL_texture(
@@ -31,6 +32,8 @@ GLuint GameWindow::loadAndBufferImage(const char* fileName){
 
     glBindTexture(GL_TEXTURE_2D, textureBufferID);
 
+    // Sets Texture Environment, in this case we want to set the environment
+    // to make the image transparent
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ONE_MINUS_SRC_ALPHA);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -40,6 +43,10 @@ GLuint GameWindow::loadAndBufferImage(const char* fileName){
     return textureBufferID;
 }
 
+// Constructor
+// Description: Creates the window and sets the openGL drawing context to that window.
+// This is where the basic initialization goes, such as how the window is drawn,
+// what available drawing functions that will be used, how objects will be drawn on the screen, etc etc.
 GameWindow::GameWindow(GLfloat width, GLfloat height, const char* winTitle):
 width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
@@ -71,7 +78,7 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
+    // For Double-Buffering we want to be able to switch windows at a constant interval
     glfwSwapInterval(1);
 
     // Set the current matrix to the GL_PROJECTION matrix
@@ -108,6 +115,8 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
         (GLvoid *)offsetof(VertexData, textureCoordinates));
 
     textureBufferID_ = loadAndBufferImage("./Image/test.png");
+    // Assignment the image id to the Sprite
+    player_ = new Sprite(textureBufferID_);
 }
 
 /*
@@ -118,7 +127,7 @@ void GameWindow::render(){
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glDrawArrays(GL_QUADS, 0, 4);
+    player_->render();
 
     glfwSwapBuffers(window_);
     glfwPollEvents();
