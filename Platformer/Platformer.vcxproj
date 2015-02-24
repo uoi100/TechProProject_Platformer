@@ -71,10 +71,12 @@
     <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="Vector2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameWindow.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="Vector2D.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Image\test.png" />

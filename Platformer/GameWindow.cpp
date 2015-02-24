@@ -78,9 +78,6 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // For Double-Buffering we want to be able to switch windows at a constant interval
-    glfwSwapInterval(1);
-
     // Set the current matrix to the GL_PROJECTION matrix
     // Which is the matrix that "Projects" how you see when things are drawn
     glMatrixMode(GL_PROJECTION);  
@@ -117,7 +114,8 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
     textureBufferID_ = loadAndBufferImage("./Image/test.png");
     // Assignment the image id to the Sprite
     Vector2D playerPosition = { 300, 200 };
-        player_ = new Sprite(textureBufferID_, playerPosition);
+    player_ = new Sprite(textureBufferID_, playerPosition);
+    player_->setVelocity(makeVector2D(2.5f, 2.5f));
 }
 
 /*
@@ -135,5 +133,5 @@ void GameWindow::render(){
 }
 
 void GameWindow::update(){
-
+    player_->update();
 }
