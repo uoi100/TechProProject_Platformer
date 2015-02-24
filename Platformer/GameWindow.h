@@ -1,6 +1,7 @@
 #define GLFW_INCLUDE_GLU
 #include <GL\glew.h>
 #include <GLFW/glfw3.h>
+#include <SOIL.h>
 
 class GameWindow
 {
@@ -9,6 +10,8 @@ private:
     GLfloat height_;
     GLFWwindow* window_;
     GLuint vertexBufferID_;
+    GLuint textureBufferID_;
+    GLuint loadAndBufferImage(const char* fileName);
 public:
     GLFWwindow* getWindow();
 

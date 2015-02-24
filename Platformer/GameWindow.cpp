@@ -3,21 +3,45 @@
 
 struct VertexData{
     GLfloat positionCoordinates[3];
+    GLfloat textureCoordinates[2];
 };
 
 // VertexData of a 100x100 Square
 VertexData vertices[] = {
-        { 0.0f, 0.0f, 0.0f },
-        { 100.0f, 0.0f, 0.0f },
-        { 100.0f, 100.0f, 0.0f },
-        { 0.0f, 100.0f, 0.0f } };
+        {{ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }},     // Bottom-Left
+        {{ 480.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }},   // Bottom-Right
+        {{ 480.0f, 800.0f, 0.0f }, { 1.0f, 1.0f }}, // Top-Right
+        {{ 0.0f, 800.0f, 0.0f }, { 0.0f, 1.0f }}    // Top-Left
+};
 
 GLFWwindow* GameWindow::getWindow(){
     return window_;
 }
 
+GLuint GameWindow::loadAndBufferImage(const char* fileName){
+
+    GLuint textureBufferID = SOIL_load_OGL_texture(
+        fileName,
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_INVERT_Y | SOIL_FLAG_MULTIPLY_ALPHA);
+
+    if (textureBufferID == 0)
+        return NULL;
+
+    glBindTexture(GL_TEXTURE_2D, textureBufferID);
+
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ONE_MINUS_SRC_ALPHA);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    return textureBufferID;
+}
+
 GameWindow::GameWindow(GLfloat width, GLfloat height, const char* winTitle):
-width_{ width }, height_{ height }, vertexBufferID_{ 0 }{
+width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     window_ = glfwCreateWindow(width_, height_, winTitle, NULL, NULL);
 
@@ -27,9 +51,6 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }{
         exit(EXIT_FAILURE);
     }
 
-    //Specifies the area that will be drawn
-    glViewport(0, 0, width_, height_);
-
     glfwMakeContextCurrent(window_);
 
     //Glew Init must be initialized after a Context is set.
@@ -38,6 +59,18 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }{
     if (err != GLEW_OK){
         fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
     }
+
+    //Specifies the area that will be drawn
+    glViewport(0, 0, width_, height_);
+    // Clear background and fill with the color white
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+    // Enable usage of 2D Textures
+    glEnable(GL_TEXTURE_2D);
+    // Enable usage of Alpha Blending, for transparent images
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 
     glfwSwapInterval(1);
 
@@ -68,8 +101,13 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }{
     // the size of the struct, and an offset of the struct and the member that will be read.
     glVertexPointer(3, GL_FLOAT, sizeof(VertexData),
         (GLvoid *)offsetof(VertexData, positionCoordinates));
-    
 
+    // Lets the drawing know the texture coordinates of the array, this is used so it knows the corners of the image
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glTexCoordPointer(2, GL_FLOAT, sizeof(VertexData),
+        (GLvoid *)offsetof(VertexData, textureCoordinates));
+
+    textureBufferID_ = loadAndBufferImage("./Image/test.png");
 }
 
 /*
@@ -78,10 +116,7 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }{
 void GameWindow::render(){
     //glfwGetFramebufferSize(window_, &width, &height);
 
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-
-    glColor3d(0.0f, 0.0f, 1.0f);
 
     glDrawArrays(GL_QUADS, 0, 4);
 
