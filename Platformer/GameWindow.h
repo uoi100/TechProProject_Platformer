@@ -2,7 +2,7 @@
 #include <GL\glew.h>
 #include <GLFW/glfw3.h>
 #include <SOIL.h>
-#include "Sprite.h"
+#include "PlayerSprite.h"
 
 class GameWindow
 {
@@ -12,12 +12,11 @@ private:
     GLFWwindow* window_;
     GLuint vertexBufferID_;
     GLuint textureBufferID_;
-    Sprite *player_;
-
+    PlayerSprite *player_;
     GLuint loadAndBufferImage(const char* fileName);
+    void checkKeyEvents();
 public:
-    GLFWwindow* getWindow();
-
+    GLFWwindow* getWindow();    
     GameWindow(GLfloat width, GLfloat height, const char* winTitle);
 
     void render();

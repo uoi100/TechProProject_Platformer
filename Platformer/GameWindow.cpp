@@ -114,8 +114,12 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
     textureBufferID_ = loadAndBufferImage("./Image/test.png");
     // Assignment the image id to the Sprite
     Vector2D playerPosition = { 300, 200 };
-    player_ = new Sprite(textureBufferID_, playerPosition);
-    player_->setVelocity(makeVector2D(2.5f, 2.5f));
+    player_ = new PlayerSprite(textureBufferID_, playerPosition, 80, 120);
+    player_->setBoundingBox(makeBoundingBox(height_, 0, 0, width_));
+    //player_->setVelocity(makeVector2D(2.5f, 2.5f));
+
+    // Allow KeyInput
+    //glfwSetKeyCallback(window_, keyInput_callback);
 }
 
 /*
@@ -134,4 +138,5 @@ void GameWindow::render(){
 
 void GameWindow::update(){
     player_->update();
+
 }

@@ -16,9 +16,11 @@ Vector2D Sprite::getVelocity(){
     return velocity_;
 }
 
-Sprite::Sprite(GLfloat textureBufferID, Vector2D position){
+Sprite::Sprite(GLfloat textureBufferID, Vector2D position, int width, int height){
     textureBufferID_ = textureBufferID;
     position_ = position;
+    width_ = width;
+    height_ = height;
 }
 
 void Sprite::render(){

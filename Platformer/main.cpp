@@ -25,7 +25,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
         exit(EXIT_FAILURE);
     }
 
-    glfwSetKeyCallback(window.getWindow(), keyInput_callback);
     // For Double-Buffering we want to be able to switch windows at a constant interval
     glfwSwapInterval(0);
     
@@ -55,18 +54,4 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
  */
 void error_callback(int error, const char* description){
     fputs(description, stderr);
-}
-
-/*
- * Description: When a key is pressed, the callback function is executed to handle the event.
- * @GLFWwindow* window - The currently focused window that the key was pressed on
- * @int key - The value of the key that was triggered
- * @int scancode - I don't know what this does yet
- * @int action - The action of the key which could be pressed or released
- * @int mods - I don't know what this does yet
- */
-static void keyInput_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
-    // If the ESCAPE key is pressed, do this.
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GL_TRUE);
 }
