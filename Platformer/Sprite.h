@@ -12,7 +12,7 @@ private:
 public:
     void setPosition( Vector2D newPosition);
     Vector2D getPosition();
-    Sprite(GLfloat textureBufferID);
+    Sprite(GLfloat textureBufferID, Vector2D position);
     void render();
     void update();
 };

@@ -116,7 +116,8 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
 
     textureBufferID_ = loadAndBufferImage("./Image/test.png");
     // Assignment the image id to the Sprite
-    player_ = new Sprite(textureBufferID_);
+    Vector2D playerPosition = { 300, 200 };
+        player_ = new Sprite(textureBufferID_, playerPosition);
 }
 
 /*
