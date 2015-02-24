@@ -1,5 +1,5 @@
+#include "Prefix.h"
 #include "Sprite.h"
-#include "BoundingBox.h"
 
 class PlayerSprite : public Sprite{
 private:

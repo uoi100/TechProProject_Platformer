@@ -43,14 +43,9 @@ GLuint GameWindow::loadAndBufferImage(const char* fileName){
     return textureBufferID;
 }
 
-// Constructor
-// Description: Creates the window and sets the openGL drawing context to that window.
-// This is where the basic initialization goes, such as how the window is drawn,
-// what available drawing functions that will be used, how objects will be drawn on the screen, etc etc.
-GameWindow::GameWindow(GLfloat width, GLfloat height, const char* winTitle):
-width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
+void GameWindow::setupGL(int width, int height, const char* title){
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-    window_ = glfwCreateWindow(width_, height_, winTitle, NULL, NULL);
+    window_ = glfwCreateWindow(width, height, title, NULL, NULL);
 
     if (!window_)
     {
@@ -80,7 +75,7 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
 
     // Set the current matrix to the GL_PROJECTION matrix
     // Which is the matrix that "Projects" how you see when things are drawn
-    glMatrixMode(GL_PROJECTION);  
+    glMatrixMode(GL_PROJECTION);
     // replace the current matrix with the identity matrix
     glLoadIdentity();
     // Defines a 2D orthographic projection matrix
@@ -100,7 +95,7 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
 
     // Allows the client to use vertex arrays
     glEnableClientState(GL_VERTEX_ARRAY);
-    
+
     // Lets the drawing know the size of the array, what data type it should expect,
     // the size of the struct, and an offset of the struct and the member that will be read.
     glVertexPointer(3, GL_FLOAT, sizeof(VertexData),
@@ -110,16 +105,37 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glTexCoordPointer(2, GL_FLOAT, sizeof(VertexData),
         (GLvoid *)offsetof(VertexData, textureCoordinates));
+}
+
+/*
+ * Description: Constructor
+ * - Sets up openGL and Glew
+ * - Sets up the Sprites (Entities) for the game.
+ */
+GameWindow::GameWindow(GLfloat width, GLfloat height, const char* winTitle):
+width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
+    setupGL(width_, height_, winTitle);
 
     textureBufferID_ = loadAndBufferImage("./Image/test.png");
-    // Assignment the image id to the Sprite
-    Vector2D playerPosition = { 300, 200 };
-    player_ = new PlayerSprite(textureBufferID_, playerPosition, 80, 120);
-    player_->setBoundingBox(makeBoundingBox(height_, 0, 0, width_));
-    //player_->setVelocity(makeVector2D(2.5f, 2.5f));
 
-    // Allow KeyInput
-    //glfwSetKeyCallback(window_, keyInput_callback);
+    renderArray_ = new std::vector < Sprite* > ;
+
+    PlayerSprite* player = new PlayerSprite(textureBufferID_, makeVector2D(500,500), 80, 120);
+    player->setBoundingBox(makeBoundingBox(height_, 0, 0, width_));
+    renderArray_->push_back(player);
+
+    Sprite* character = new Sprite(textureBufferID_, makeVector2D(700, 400), 80, 120);
+    //character->setVelocity(makeVector2D(0.1f, 0.1f));
+    renderArray_->push_back(character);
+}
+
+GameWindow::~GameWindow(){
+    for (std::vector<Sprite*>::iterator spriteIterator = renderArray_->begin();
+        spriteIterator != renderArray_->end(); spriteIterator++)
+    {
+        delete (*spriteIterator);
+    }
+    delete renderArray_;
 }
 
 /*
@@ -130,13 +146,21 @@ void GameWindow::render(){
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    player_->render();
+    for (std::vector<Sprite*>::iterator spriteIterator = renderArray_->begin();
+        spriteIterator != renderArray_->end(); spriteIterator++)
+    {
+        (*spriteIterator)->render();
+    }
 
     glfwSwapBuffers(window_);
     glfwPollEvents();
 }
 
 void GameWindow::update(){
-    player_->update();
+    for (std::vector<Sprite*>::iterator spriteIterator = renderArray_->begin();
+        spriteIterator != renderArray_->end(); spriteIterator++)
+    {
+        (*spriteIterator)->update();
+    }
 
 }

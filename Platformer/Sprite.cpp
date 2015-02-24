@@ -21,6 +21,7 @@ Sprite::Sprite(GLfloat textureBufferID, Vector2D position, int width, int height
     position_ = position;
     width_ = width;
     height_ = height;
+    velocity_ = makeVector2D(0.0f, 0.0f);
 }
 
 void Sprite::render(){

@@ -1,5 +1,4 @@
-#include <GLFW\glfw3.h>
-#include "Vector2D.h"
+#include "Prefix.h"
 
 class Sprite{
 private:

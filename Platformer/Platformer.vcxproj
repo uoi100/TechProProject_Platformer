@@ -82,6 +82,7 @@
     <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="GameWindow.h" />
     <ClInclude Include="PlayerSprite.h" />
+    <ClInclude Include="Prefix.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Vector2D.h" />
   </ItemGroup>

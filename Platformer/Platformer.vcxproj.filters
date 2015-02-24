@@ -16,6 +16,12 @@
     <Filter Include="Source Files\Image">
       <UniqueIdentifier>{7066fa1d-d1b8-4d02-9f6f-990fe5ab8671}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Vector2D">
+      <UniqueIdentifier>{fc55b71d-5e39-41b3-b68a-750e4b5209c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\BoundingBox">
+      <UniqueIdentifier>{bf9d735e-233e-4870-869f-a0b714361467}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -27,14 +33,14 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vector2D.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="PlayerSprite.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="Vector2D.cpp">
+      <Filter>Header Files\Vector2D</Filter>
+    </ClCompile>
     <ClCompile Include="BoundingBox.cpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\BoundingBox</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -44,13 +50,16 @@
     <ClInclude Include="Sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vector2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Vector2D.h">
+      <Filter>Header Files\Vector2D</Filter>
+    </ClInclude>
     <ClInclude Include="BoundingBox.h">
+      <Filter>Header Files\BoundingBox</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
