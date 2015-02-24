@@ -112,7 +112,7 @@ void GameWindow::setupGL(int width, int height, const char* title){
  * - Sets up openGL and Glew
  * - Sets up the Sprites (Entities) for the game.
  */
-GameWindow::GameWindow(GLfloat width, GLfloat height, const char* winTitle):
+GameWindow::GameWindow(int width, int height, const char* winTitle):
 width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
     setupGL(width_, height_, winTitle);
 
@@ -136,6 +136,27 @@ GameWindow::~GameWindow(){
         delete (*spriteIterator);
     }
     delete renderArray_;
+}
+
+void GameWindow::mouseEvent(int button, int action){
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        double x;
+        double y;
+        std::ostringstream oss;
+        glfwGetCursorPos(glfwGetCurrentContext(), &x, &y);        
+        y = 800 - y;
+        oss << "X: " << x << " Y: " << y << std::endl;
+        OutputDebugString(oss.str().c_str());
+    }
+}
+
+int GameWindow::getWidth(){
+    return width_;
+}
+
+int GameWindow::getHeight(){
+    return height_;
 }
 
 /*

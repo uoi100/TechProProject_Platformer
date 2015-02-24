@@ -10,14 +10,19 @@
 void error_callback(int error, const char* description);
 static void keyInput_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow ){
+void mouseEvent(GLFWwindow* window, int button, int action, int mods){
+    ((GameWindow*)window)->mouseEvent(button, action);
+}
 
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow ){
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
     GameWindow window(800*16/9, 800, "PlatformerGame");
+
+    glfwSetMouseButtonCallback(glfwGetCurrentContext(), mouseEvent);
 
     if (!window.getWindow())
     {

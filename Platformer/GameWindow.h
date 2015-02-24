@@ -5,8 +5,8 @@
 class GameWindow
 {
 private:
-    GLfloat width_;
-    GLfloat height_;
+    int width_;
+    int height_;
     GLFWwindow* window_;
     GLuint vertexBufferID_;
     GLuint textureBufferID_;
@@ -16,8 +16,12 @@ private:
     void setupGL(int width, int height, const char* title);
 public:
     GLFWwindow* getWindow();    
-    GameWindow(GLfloat width, GLfloat height, const char* winTitle);
+    GameWindow(int width, int height, const char* winTitle);
     ~GameWindow();
+
+    void mouseEvent(int button, int action);
+    int getWidth();
+    int getHeight();
 
     void render();
     void update();
