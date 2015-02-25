@@ -3,8 +3,8 @@
 class Sprite{
 private:
     Vector2D velocity_; // Movement of the sprite
-    GLfloat textureBufferID_; // texture id of the sprite
 protected:
+    GLfloat textureBufferID_; // texture id of the sprite
     Vector2D position_; // position of the sprite
     int width_;
     int height_;
@@ -18,6 +18,6 @@ public:
     Vector2D getVelocity();
     Sprite(GLfloat textureBufferID, Vector2D position, int width, int height);
 
-    void render();
+    virtual void render();
     virtual void update();
 };
