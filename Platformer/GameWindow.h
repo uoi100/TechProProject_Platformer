@@ -10,10 +10,10 @@ private:
     GLFWwindow* window_;
     GLuint vertexBufferID_;
     GLuint textureBufferID_;
-    GLuint ballBufferID_;
+    GLuint projectileBufferID_;
 
     PlayerSprite* player_;
-    std::vector<Sprite*> *ballsArray_;
+    std::vector<Sprite*> *projectileArray_;
 
     GLuint loadAndBufferImage(const char* fileName);
     void setupGL(int width, int height, const char* title);

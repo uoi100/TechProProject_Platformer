@@ -16,6 +16,9 @@ public:
     GLfloat getRotation();
     void setVelocity(Vector2D newVector);
     Vector2D getVelocity();
+    int getWidth();
+    int getHeight();
+
     Sprite(GLfloat textureBufferID, Vector2D position, int width, int height);
 
     virtual void render();

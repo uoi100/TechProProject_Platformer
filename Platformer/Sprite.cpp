@@ -24,6 +24,14 @@ Vector2D Sprite::getVelocity(){
     return velocity_;
 }
 
+int Sprite::getWidth(){
+    return width_;
+}
+
+int Sprite::getHeight(){
+    return height_;
+}
+
 Sprite::Sprite(GLfloat textureBufferID, Vector2D position, int width, int height){
     textureBufferID_ = textureBufferID;
     position_ = position;

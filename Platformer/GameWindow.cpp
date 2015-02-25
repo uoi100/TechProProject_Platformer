@@ -1,4 +1,5 @@
 #include "GameWindow.h"
+#include <algorithm>
 #include <string>
 
 struct VertexData{
@@ -43,6 +44,7 @@ GLuint GameWindow::loadAndBufferImage(const char* fileName){
     return textureBufferID;
 }
 
+// Sets up OpenGL and Glew which allows for the graphics operations to work.
 void GameWindow::setupGL(int width, int height, const char* title){
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     window_ = glfwCreateWindow(width, height, title, NULL, NULL);
@@ -117,30 +119,39 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
     setupGL(width_, height_, winTitle);
 
     textureBufferID_ = loadAndBufferImage("./Image/test.png");
-    ballBufferID_ = loadAndBufferImage("./Image/projectile.png");
+    projectileBufferID_ = loadAndBufferImage("./Image/projectile.png");
 
-    ballsArray_ = new std::vector < Sprite* >;
+    projectileArray_ = new std::vector < Sprite* >;
+    projectileArray_->reserve(20);
 
     player_ = new PlayerSprite(textureBufferID_, makeVector2D(500,500), 80, 120);
     player_->setBoundingBox(makeBoundingBox(height_, 0, 0, width_));
 }
 
 GameWindow::~GameWindow(){
-    for (std::vector<Sprite*>::iterator spriteIterator = ballsArray_->begin();
-        spriteIterator != ballsArray_->end(); spriteIterator++)
+    for (std::vector<Sprite*>::iterator spriteIterator = projectileArray_->begin();
+        spriteIterator != projectileArray_->end(); spriteIterator++)
     {
         delete (*spriteIterator);
     }
-    delete ballsArray_;
+    delete projectileArray_;
     delete player_;
+    glDeleteBuffers(1, &vertexBufferID_);
+    glDeleteBuffers(1, &textureBufferID_);
+    glDeleteBuffers(1, &projectileBufferID_);
 }
 
+/*
+ * Description: When the mouse is clicked, do the following:
+ * Left Click - Shoot a projectile at the position of the player and store it
+ * in an array to keep track of.
+ */
 void GameWindow::mouseEvent(int button, int action){
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
-        Sprite* ball = new Sprite(ballBufferID_, player_->getPosition(), 80, 120);
-        ball->setVelocity(makeVector2D(10, 0));
-        ballsArray_->push_back(ball);
+        Sprite* projectile = new Sprite(projectileBufferID_, player_->getPosition(), 80, 120);
+        projectile->setVelocity(makeVector2D(10, 0));
+        projectileArray_->push_back(projectile);
     }
 }
 
@@ -153,7 +164,7 @@ int GameWindow::getHeight(){
 }
 
 /*
- * Description: Main drawing operations will be here.
+ * Description: Main drawing operations for objects will be here.
  */
 void GameWindow::render(){
     //glfwGetFramebufferSize(window_, &width, &height);
@@ -162,24 +173,33 @@ void GameWindow::render(){
 
     player_->render();
 
-    for (std::vector<Sprite*>::iterator spriteIterator = ballsArray_->begin();
-        spriteIterator != ballsArray_->end(); spriteIterator++)
-    {
-        (*spriteIterator)->render();
-    }
+    for (auto& it : *projectileArray_)
+        it->render();
 
     glfwSwapBuffers(window_);
     glfwPollEvents();
 }
 
+// This is where the update functions of objects go
 void GameWindow::update(){
     player_->update();
 
-    for (std::vector<Sprite*>::iterator spriteIterator = ballsArray_->begin();
-        spriteIterator != ballsArray_->end(); spriteIterator++)
-    {
-        (*spriteIterator)->setRotation((*spriteIterator)->getRotation() + 35);
-        (*spriteIterator)->update();
+    std::vector<std::vector<Sprite*>::iterator> deleteProjectilesArray;
+
+    // Check if any projectiles are out of the screen, if they are prepare them for deletion
+    for (std::vector<Sprite*>::iterator projectileIterator = projectileArray_->begin();
+        projectileIterator != projectileArray_->end(); projectileIterator++)
+        if ((*projectileIterator)->getPosition().x > width_ + (*projectileIterator)->getWidth())
+            deleteProjectilesArray.push_back(projectileIterator);
+
+    // Delete projectiles that are out of the screen
+    for (auto& it : deleteProjectilesArray)
+        projectileArray_->erase(it);
+
+    // Sets the rotation and updates the projectiles
+    for (auto &it : *projectileArray_){
+        it->setRotation(it->getRotation() + 35);
+        it->update();
     }
 
 }
