@@ -39,11 +39,15 @@ void Sprite::render(){
     //Resets the Transformations
     glLoadIdentity();
 
-    //Translate(move) the sprite to this position.
-    glTranslatef(position_.x, position_.y, NULL);
-
+    //Translate the origin of the image to be rotated, in this case its center
+    //Translate the image to x + center of width
+    //Translate the image to y + center of height
+    glTranslatef(position_.x+width_/2, position_.y+height_/2, NULL);
     //Sets the angle of rotation for the sprite
     glRotatef(rotation_, NULL, NULL, 1.0f);
+    //Undo the translation of the origin
+    glTranslatef( -width_/2,-height_/2, NULL);
+
     glDrawArrays(GL_QUADS, 0, 4);
 }
 

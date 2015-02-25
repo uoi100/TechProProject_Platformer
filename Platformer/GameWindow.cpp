@@ -117,7 +117,7 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
     setupGL(width_, height_, winTitle);
 
     textureBufferID_ = loadAndBufferImage("./Image/test.png");
-    ballBufferID_ = loadAndBufferImage("./Image/test.png");
+    ballBufferID_ = loadAndBufferImage("./Image/projectile.png");
 
     ballsArray_ = new std::vector < Sprite* >;
 
@@ -132,6 +132,7 @@ GameWindow::~GameWindow(){
         delete (*spriteIterator);
     }
     delete ballsArray_;
+    delete player_;
 }
 
 void GameWindow::mouseEvent(int button, int action){
