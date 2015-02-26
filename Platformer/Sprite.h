@@ -9,11 +9,14 @@ protected:
     int width_;
     int height_;
     GLfloat rotation_;
+    GLfloat rotationVelocity_;
 public:
     void setPosition( Vector2D newPosition);
     Vector2D getPosition();
     void setRotation(GLfloat rotation);
     GLfloat getRotation();
+    void setRotationVelocity(GLfloat velocity);
+    GLfloat getRotationVelocity();
     void setVelocity(Vector2D newVector);
     Vector2D getVelocity();
     int getWidth();

@@ -11,21 +11,31 @@ private:
     GLuint vertexBufferID_;
     GLuint textureBufferID_;
     GLuint projectileBufferID_;
+    GLuint enemyBufferID_;
 
     PlayerSprite* player_;
     std::vector<Sprite*> *projectileArray_;
+    std::vector<Sprite*> *enemyArray_;
 
+    GLuint createVertexBuffer(int width, int height);
     GLuint loadAndBufferImage(const char* fileName);
+    void addEnemy();
+    bool checkCollision(Sprite* a, Sprite* b);
+    void checkForCollisions();
+    void checkOutsideScreen();
     void setupGL(int width, int height, const char* title);
-public:
-    GLFWwindow* getWindow();    
+public: 
     GameWindow(int width, int height, const char* winTitle);
     ~GameWindow();
 
     void mouseEvent(int button, int action);
     int getWidth();
     int getHeight();
+    GLFWwindow* getWindow();
 
     void render();
     void update();
 };
+
+
+

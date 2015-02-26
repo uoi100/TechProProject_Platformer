@@ -85,6 +85,7 @@
     <ClInclude Include="Prefix.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Vector2D.h" />
+    <ClInclude Include="VertexData.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Image\test.png" />

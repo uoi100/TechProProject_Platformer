@@ -22,6 +22,9 @@
     <Filter Include="Header Files\BoundingBox">
       <UniqueIdentifier>{bf9d735e-233e-4870-869f-a0b714361467}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\VertexData">
+      <UniqueIdentifier>{ed5b4308-b168-4081-aa51-8e00804be384}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -61,6 +64,9 @@
     </ClInclude>
     <ClInclude Include="Prefix.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexData.h">
+      <Filter>Header Files\VertexData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
