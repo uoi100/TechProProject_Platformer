@@ -8,7 +8,10 @@ private:
     int width_;
     int height_;
     GLFWwindow* window_;
+    GLuint vertexArrayObjectID_;
+    GLuint smallVertexArrayObjectID_;
     GLuint vertexBufferID_;
+    GLuint smallVertexBufferID_;
     GLuint textureBufferID_;
     GLuint projectileBufferID_;
     GLuint enemyBufferID_;
@@ -17,7 +20,7 @@ private:
     std::vector<Sprite*> *projectileArray_;
     std::vector<Sprite*> *enemyArray_;
 
-    GLuint createVertexBuffer(int width, int height);
+    void createVertexBuffer(GLuint *objectID, GLuint *bufferID, int width, int height);
     GLuint loadAndBufferImage(const char* fileName);
     void addEnemy();
     bool checkCollision(Sprite* a, Sprite* b);

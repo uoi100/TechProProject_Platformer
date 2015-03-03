@@ -2,12 +2,13 @@
 #include <algorithm>
 #include <string>
 
-GLuint GameWindow::createVertexBuffer(int width, int height){
-    GLuint vertexBufferID;
+void GameWindow::createVertexBuffer(GLuint *objectID, GLuint *bufferID, int width, int height){
+    glGenVertexArrays(1, objectID);
+    glBindVertexArray(*objectID);
     // Create a name buffer object for vertexBufferID
-    glGenBuffers(1, &vertexBufferID);
+    glGenBuffers(1, bufferID);
     // Sets an array buffer pointed at vertexBufferID
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+    glBindBuffer(GL_ARRAY_BUFFER, *bufferID);
     // Create a vertex with 4 points for our entities
     VertexData square[] = {
             { { -width / 2, -height / 2, 0.0f }, { 0.0f, 0.0f } },     // Bottom-Left
@@ -18,7 +19,12 @@ GLuint GameWindow::createVertexBuffer(int width, int height){
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(square), square, GL_STATIC_DRAW);
 
-    return vertexBufferID;
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData),
+        (GLvoid *)offsetof(VertexData, positionCoordinates));
+    
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
 }
 
 // We want to render load and buffer images for drawing
@@ -28,7 +34,7 @@ GLuint GameWindow::loadAndBufferImage(const char* fileName){
         fileName,
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_INVERT_Y | SOIL_FLAG_MULTIPLY_ALPHA);
+        SOIL_FLAG_INVERT_Y | SOIL_FLAG_MULTIPLY_ALPHA | SOIL_FLAG_NTSC_SAFE_RGB);
 
     if (textureBufferID == 0)
         return NULL;
@@ -37,7 +43,7 @@ GLuint GameWindow::loadAndBufferImage(const char* fileName){
 
     // Sets Texture Environment, in this case we want to set the environment
     // to make the image transparent
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ONE_MINUS_SRC_ALPHA);
+    //glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ONE_MINUS_SRC_ALPHA);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -51,7 +57,7 @@ GLuint GameWindow::loadAndBufferImage(const char* fileName){
  */
 void GameWindow::addEnemy(){
     GLfloat positionY = rand() % height_;
-    Sprite* enemy = new Sprite(enemyBufferID_, makeVector2D(width_ + 80, positionY), 80, 120);
+    Sprite* enemy = new Sprite(enemyBufferID_, makeVector2D(width_ + 80, positionY), 32, 32);
     enemy->setVelocity(makeVector2D(-5, 0));
     enemy->setRotationVelocity(12);
     enemyArray_->push_back(enemy);
@@ -136,7 +142,7 @@ void GameWindow::checkForCollisions(){
 }
 
 // Sets up OpenGL and Glew which allows for the graphics operations to work.
-void GameWindow::setupGL(int width, int height, const char* title){
+void GameWindow::setupGL(int width, int height, const char* title){    
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     window_ = glfwCreateWindow(width, height, title, NULL, NULL);
 
@@ -158,13 +164,13 @@ void GameWindow::setupGL(int width, int height, const char* title){
     //Specifies the area that will be drawn
     glViewport(0, 0, width_, height_);
     // Clear background and fill with the color white
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
     // Enable usage of 2D Textures
     glEnable(GL_TEXTURE_2D);
     // Enable usage of Alpha Blending, for transparent images
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Set the current matrix to the GL_PROJECTION matrix
     // Which is the matrix that "Projects" how you see when things are drawn
@@ -179,41 +185,24 @@ void GameWindow::setupGL(int width, int height, const char* title){
     // Which is basically for our objects to be drawn and then translated onto our projection
     glMatrixMode(GL_MODELVIEW);
 
-    /*
-    // Create a name buffer object for vertexBufferID
-    glGenBuffers(1, &vertexBufferID_);
-    // Sets an array buffer pointed at vertexBufferID
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID_);
-    // Create a vertex with 4 points for our entities
-    //VertexData *vertices = makeVertices(64, 128);
-    int texWidth = 64;
-    int texHeight = 128;
-
-    VertexData square[] = {
-    { { -texWidth / 2, -texHeight / 2, 0.0f }, { 0.0f, 0.0f } },     // Bottom-Left
-    { { texWidth / 2, -texHeight / 2, 0.0f }, { 1.0f, 0.0f } },   // Bottom-Right
-    { { texWidth / 2, texHeight / 2, 0.0f }, { 1.0f, 1.0f } }, // Top-Right
-    { { -texWidth / 2, texHeight / 2, 0.0f }, { 0.0f, 1.0f } }    // Top-Left
-    };
-
-    // Adds the data of vertices into the buffer for static drawing operations
-    glBufferData(GL_ARRAY_BUFFER, sizeof(square), square, GL_STATIC_DRAW);
-    */
-    vertexBufferID_ = createVertexBuffer(64, 128);
-
     // Allows the client to use vertex arrays
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
+    createVertexBuffer(&vertexArrayObjectID_, &vertexBufferID_, 64, 128);
+    createVertexBuffer(&smallVertexArrayObjectID_, &smallVertexBufferID_, 32, 32);
+
+    /*
     // Lets the drawing know the size of the array, what data type it should expect,
     // the size of the struct, and an offset of the struct and the member that will be read.
     glVertexPointer(3, GL_FLOAT, sizeof(VertexData),
         (GLvoid *)offsetof(VertexData, positionCoordinates));
 
     // Lets the drawing know the texture coordinates of the array, this is used so it knows the corners of the image
-    
+
     glTexCoordPointer(2, GL_FLOAT, sizeof(VertexData),
         (GLvoid *)offsetof(VertexData, textureCoordinates));
+    */
 }
 
 /*
@@ -234,7 +223,7 @@ width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
     enemyArray_ = new std::vector < Sprite* > ;
     enemyArray_->reserve(20);
 
-    player_ = new PlayerSprite(textureBufferID_, makeVector2D(500,500), 80, 120);
+    player_ = new PlayerSprite(textureBufferID_, makeVector2D(500,500), 64, 128);
     player_->setBoundingBox(makeBoundingBox(height_, 0, 0, width_));
 }
 
@@ -262,7 +251,7 @@ GameWindow::~GameWindow(){
 void GameWindow::mouseEvent(int button, int action){
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
-        Sprite* projectile = new Sprite(projectileBufferID_, player_->getPosition(), 80, 120);
+        Sprite* projectile = new Sprite(projectileBufferID_, player_->getPosition(), 32, 32);
         projectile->setVelocity(makeVector2D(10, 0));
         projectile->setRotationVelocity(36);
         projectileArray_->push_back(projectile);
@@ -287,9 +276,11 @@ GLFWwindow* GameWindow::getWindow(){
  */
 void GameWindow::render(){
     glClear(GL_COLOR_BUFFER_BIT);
+    glBindVertexArray(vertexArrayObjectID_);
 
     player_->render();
 
+    glBindVertexArray(smallVertexArrayObjectID_);
     for (auto& it : *projectileArray_)
         it->render();
 
