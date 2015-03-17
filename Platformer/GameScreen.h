@@ -4,8 +4,6 @@
 
 class GameScreen : public Screen {
 private:
-    int width_;
-    int height_;
     GLuint vertexArrayObjectID_;
     GLuint smallVertexArrayObjectID_;
     GLuint vertexBufferID_;

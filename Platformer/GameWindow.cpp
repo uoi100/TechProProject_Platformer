@@ -60,7 +60,7 @@ GameWindow::GameWindow(int width, int height, const char* winTitle):
 width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
     setupGL(width_, height_, winTitle);
 
-    currentScreen = new GameScreen(width_, height_);
+    currentScreen = new TitleScreen(width_, height_);
 }
 
 GameWindow::~GameWindow(){
@@ -105,5 +105,16 @@ void GameWindow::render(){
 void GameWindow::update(){
 
     currentScreen->update();
+
+    if (currentScreen->switchScreen()){
+        if (currentScreen->screenIndex() == 1){
+            Screen *old = currentScreen;
+            currentScreen = new GameScreen(width_, height_);
+            delete old;
+        }
+        else if (currentScreen->screenIndex() == -1){
+            glfwSetWindowShouldClose(window_, GL_TRUE);
+        }
+    }
 
 }

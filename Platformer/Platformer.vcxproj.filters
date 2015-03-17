@@ -31,6 +31,9 @@
     <Filter Include="Header Files\CustomOpenGLWrapper">
       <UniqueIdentifier>{8db8ebcb-8acd-46b8-8599-1313109bbbcf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Screen">
+      <UniqueIdentifier>{9e0a7623-43e8-4f3b-b718-34deee01f147}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -51,13 +54,16 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>Header Files\Sprite</Filter>
     </ClCompile>
-    <ClCompile Include="Screen.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CustomOpenGLWrapper.cpp">
       <Filter>Header Files\CustomOpenGLWrapper</Filter>
     </ClCompile>
     <ClCompile Include="GameScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Screen.cpp">
+      <Filter>Header Files\Screen</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,14 +89,17 @@
     <ClInclude Include="Sprite.h">
       <Filter>Header Files\Sprite</Filter>
     </ClInclude>
-    <ClInclude Include="Screen.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="CustomOpenGLWrapper.h">
       <Filter>Header Files\CustomOpenGLWrapper</Filter>
     </ClInclude>
     <ClInclude Include="GameScreen.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleScreen.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Screen.h">
+      <Filter>Header Files\Screen</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

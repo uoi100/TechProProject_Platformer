@@ -89,7 +89,7 @@ void GameScreen::checkForCollisions(){
         projectileArray_->erase(it);
 }
 
-GameScreen::GameScreen(int width, int height) : width_{ width }, height_{ height }{
+GameScreen::GameScreen(int width, int height) : Screen(width, height){
     createVertexBuffer(&vertexArrayObjectID_, &vertexBufferID_, 64, 128);
     createVertexBuffer(&smallVertexArrayObjectID_, &smallVertexBufferID_, 32, 32);
 
@@ -113,6 +113,8 @@ GameScreen::~GameScreen(){
     for (auto& it : *enemyArray_)
         delete it;
 
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     delete projectileArray_;
     delete enemyArray_;
     delete player_;

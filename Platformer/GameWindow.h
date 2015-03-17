@@ -1,5 +1,6 @@
 #include "Prefix.h"
 #include "GameScreen.h"
+#include "TitleScreen.h"
 
 class GameWindow
 {

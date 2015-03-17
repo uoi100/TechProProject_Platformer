@@ -1,4 +1,6 @@
 #include "Prefix.h"
+#ifndef SPRITE_H
+#define SPRITE_H
 
 class Sprite{
 private:
@@ -27,3 +29,5 @@ public:
     virtual void render();
     virtual void update();
 };
+
+#endif

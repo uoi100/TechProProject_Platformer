@@ -79,6 +79,7 @@
     <ClCompile Include="PlayerSprite.cpp" />
     <ClCompile Include="Screen.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="TitleScreen.cpp" />
     <ClCompile Include="Vector2D.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -90,6 +91,7 @@
     <ClInclude Include="Prefix.h" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="TitleScreen.h" />
     <ClInclude Include="Vector2D.h" />
     <ClInclude Include="VertexData.h" />
   </ItemGroup>
