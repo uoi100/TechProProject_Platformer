@@ -25,19 +25,16 @@
     <Filter Include="Header Files\VertexData">
       <UniqueIdentifier>{ed5b4308-b168-4081-aa51-8e00804be384}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Sprite">
+      <UniqueIdentifier>{e2fa03f1-665d-4ae8-be9e-ce48a52c00ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CustomOpenGLWrapper">
+      <UniqueIdentifier>{8db8ebcb-8acd-46b8-8599-1313109bbbcf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameWindow.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerSprite.cpp">
-      <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="Vector2D.cpp">
       <Filter>Header Files\Vector2D</Filter>
@@ -45,12 +42,27 @@
     <ClCompile Include="BoundingBox.cpp">
       <Filter>Header Files\BoundingBox</Filter>
     </ClCompile>
+    <ClCompile Include="GameWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerSprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Header Files\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="Screen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomOpenGLWrapper.cpp">
+      <Filter>Header Files\CustomOpenGLWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PlayerSprite.h">
@@ -67,6 +79,18 @@
     </ClInclude>
     <ClInclude Include="VertexData.h">
       <Filter>Header Files\VertexData</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Header Files\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="Screen.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomOpenGLWrapper.h">
+      <Filter>Header Files\CustomOpenGLWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScreen.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
