@@ -6,6 +6,7 @@ private:
 
     GLuint vertexID_;
     GLuint bufferID_;
+    GLuint indicesID_;
 
     void setupQuad();
     void setupGL(int width, int height, const char* winTitle);
