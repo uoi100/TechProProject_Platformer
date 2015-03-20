@@ -21,6 +21,9 @@
     <ClCompile Include="GameWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GLSLParser.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Prefix.h">
@@ -29,5 +32,16 @@
     <ClInclude Include="GameWindow.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="GLSLParser.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vertex.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="fragment.glsl">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

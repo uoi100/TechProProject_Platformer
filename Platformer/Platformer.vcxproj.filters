@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\Image">
-      <UniqueIdentifier>{7066fa1d-d1b8-4d02-9f6f-990fe5ab8671}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Vector2D">
       <UniqueIdentifier>{fc55b71d-5e39-41b3-b68a-750e4b5209c2}</UniqueIdentifier>
     </Filter>
@@ -101,10 +98,5 @@
     <ClInclude Include="Screen.h">
       <Filter>Header Files\Screen</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Image\test.png">
-      <Filter>Source Files\Image</Filter>
-    </Image>
   </ItemGroup>
 </Project>

@@ -95,9 +95,6 @@
     <ClInclude Include="Vector2D.h" />
     <ClInclude Include="VertexData.h" />
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="Image\test.png" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

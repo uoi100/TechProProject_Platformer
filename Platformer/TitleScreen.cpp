@@ -1,6 +1,11 @@
 #include "TitleScreen.h"
 #include <sstream>
 
+/*
+ * @Author Calvin Truong Wesley Dale
+ * @Version 1.0
+ * @Description
+ */
 bool TitleScreen::checkButtonCollision(int xpos, int ypos, Sprite* btn){
     return (xpos >= btn->getPosition().x - btn->getWidth() / 2 &&
         xpos <= btn->getPosition().x + btn->getWidth() / 2 &&
