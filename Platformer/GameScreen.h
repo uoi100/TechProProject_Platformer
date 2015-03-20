@@ -13,6 +13,7 @@ private:
     GLuint enemyBufferID_;
 
     PlayerSprite* player_;
+    Sprite* someBlock_;
     std::vector<Sprite*> *projectileArray_;
     std::vector<Sprite*> *enemyArray_;
 
@@ -20,6 +21,7 @@ private:
     bool checkCollision(Sprite* a, Sprite* b);
     void checkForCollisions();
     void checkOutsideScreen();
+    void playerPhysics();
 public:
     GameScreen(int width, int height);
     ~GameScreen();

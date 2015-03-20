@@ -22,7 +22,7 @@ std::string removeSpaces(std::string string){
     return newString;
 }
 
-void getStatus(GLuint shaderID){
+bool getStatus(GLuint shaderID){
     GLint isCompiled = 0;
     glGetShaderiv(shaderID, GL_COMPILE_STATUS, &isCompiled);
     
@@ -42,6 +42,10 @@ void getStatus(GLuint shaderID){
 
     OutputDebugString(ss.str().c_str());
 
-    if (isCompiled == GL_FALSE)
+    if (isCompiled == GL_FALSE){
         glDeleteShader(shaderID); // Delete the shader to avoid memory leaks
+        return false;
+    }
+
+    return true;
 }

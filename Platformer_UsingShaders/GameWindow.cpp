@@ -30,11 +30,9 @@ int GameWindow::loadShader(std::string filename, int type){
     glShaderSource(shaderID, 1, &shaderSource, NULL);
     glCompileShader(shaderID);
     
-    getStatus(shaderID);
-
-    //OutputDebugString(out.c_str());
-
-    return shaderID;
+    if(getStatus(shaderID))   
+        return shaderID;
+    return 0;
 }
 
 void GameWindow::setupShaders(){
@@ -88,6 +86,7 @@ void GameWindow::setupQuad(){
         // Right-Top Triangle
         2, 3, 0
     };
+    
 
     //Create a Vertex Array Object in memory (glGenVertexArrays)
     //Select the newly created Vertex Array Object (glBindVertexArray)

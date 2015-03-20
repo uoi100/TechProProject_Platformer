@@ -89,6 +89,57 @@ void GameScreen::checkForCollisions(){
         projectileArray_->erase(it);
 }
 
+/*
+ * Description: Player Logic goes here
+ * Basic Example of how to check for collision:
+ *
+ * player_->getPosition() - will give you a 2D vector that contains the x and y position.
+ * so doing player_->getPosition().x - will give you the x position of the player.
+ *
+ * Please note that when you use player_->getPositon() you get the positon at the origin of the player, which is the literally the middle of the sprite.
+ * So if you want to get the "Left" side of the player you will need to do this:
+ * player_->getPosition().x - player_->getWidth()/2
+ * This will get you the x value that determines the Left side of the player.
+ * So say the player was 32 x 32 the origin will be at 16,16. If the player was at position 200
+ * then player_->getPosition().x will give you x at 200. And if you want to find the left-side of the player
+ * then you will do: player_->getPosition().x - player_->getWidth()/2
+ * which will be 200 - 16 = 184
+ * so his left side is at 184. Do the same for the right side and it will be 216.
+ * 
+ * In this case though our player is 64 x 128 ( See constructor for details on size ).
+ * This logic also applies on other sprites as well.
+ */
+void GameScreen::playerPhysics(){
+    Vector2D playerPosition = player_->getPosition();
+    int playerWidth = player_->getWidth() / 2;
+    int playerHeight = player_->getHeight() / 2;
+    Vector2D someBlockPositon = someBlock_->getPosition();
+    // We don't care about the Block's width or height because it is the same
+    int blockSize = someBlock_->getWidth() / 2;
+
+
+    // This checks if the player's left-side collides with someBlock's right-side
+    /*
+     * This condition checks the following:
+     * - If the player's left side collides with the block's right side
+     * - If the player's right side's position is still greater than the block's right side position
+     * (This is important because the player's left and right side position can be smaller than the block's right side.
+     * Which can trigger a logic error because the function thinks the player is colliding with the block).
+     * - If the player's bottom side is colliding with the block's top side
+     * - If the player's top side is colliding with the block's bottom side
+     */
+    if (
+        (playerPosition.x - playerWidth) <= (someBlockPositon.x + blockSize) &&
+        (playerPosition.x + playerWidth) > (someBlockPositon.x + blockSize) &&
+        (playerPosition.y - playerHeight) <= (someBlockPositon.y + blockSize) &&
+        (playerPosition.y + playerHeight) >= (someBlockPositon.y - blockSize)
+        ){
+        // We want to see how much of the player's left-side collides with someBlock's right-side
+        int deltaX = abs((someBlock_->getPosition().x + someBlock_->getWidth() / 2) - (player_->getPosition().x - player_->getWidth() / 2));
+        player_->setPosition(makeVector2D(player_->getPosition().x + deltaX, player_->getPosition().y));
+    }
+}
+
 GameScreen::GameScreen(int width, int height) : Screen(width, height){
     createVertexBuffer(&vertexArrayObjectID_, &vertexBufferID_, 64, 128);
     createVertexBuffer(&smallVertexArrayObjectID_, &smallVertexBufferID_, 32, 32);
@@ -103,6 +154,7 @@ GameScreen::GameScreen(int width, int height) : Screen(width, height){
     enemyArray_->reserve(20);
 
     player_ = new PlayerSprite(textureBufferID_, makeVector2D(500, 500), 64, 128);
+    someBlock_ = new Sprite(textureBufferID_, makeVector2D(width_ / 2, 0), 32, 32);
     player_->setBoundingBox(makeBoundingBox(height_, 0, 0, width_));
 }
 
@@ -145,6 +197,8 @@ void GameScreen::render(){
     player_->render();
 
     glBindVertexArray(smallVertexArrayObjectID_);
+
+    someBlock_->render();
     for (auto& it : *projectileArray_)
         it->render();
 
@@ -154,6 +208,7 @@ void GameScreen::render(){
 
 void GameScreen::update(){
     player_->update();
+    playerPhysics();
 
     // Checks if the players or projectiles collides with the enemy.
     checkForCollisions();
