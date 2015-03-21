@@ -76,6 +76,7 @@
     <ClInclude Include="GameWindow.h" />
     <ClInclude Include="GLSLParser.h" />
     <ClInclude Include="Prefix.h" />
+    <ClInclude Include="VertexData.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.glsl" />

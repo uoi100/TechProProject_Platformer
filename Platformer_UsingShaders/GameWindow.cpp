@@ -3,9 +3,48 @@
 #include <vector>
 #include "GLSLParser.h"
 
-struct VertexData{
-    GLfloat positions[4];
-};
+// We want to render load and buffer images for drawing
+GLuint loadAndBufferImage(const char* fileName, int textureUnit, int width, int height){
+
+    GLuint textureBufferID = SOIL_load_OGL_texture(
+        fileName,
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_MULTIPLY_ALPHA | SOIL_FLAG_MIPMAPS);
+
+    if (textureBufferID == 0)
+        return NULL;
+
+    // Create a new texture object in memory and bind it
+    glActiveTexture(textureUnit);
+    glBindTexture(GL_TEXTURE_2D, textureBufferID);
+
+    // ALL RGB bytes are aligned to each other and each component is 1 byte
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    // Upload the texture data and generate mip maps (for scaling)
+    //glGenerateMipmap(GL_TEXTURE_2D);
+
+    // Sets Texture Environment, in this case we want to set the environment,
+    // to make the image transparent
+
+    // Setup the ST(UV) coordinate system
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // Setup what to do when the texture has to be scaled
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    //glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ONE_MINUS_SRC_ALPHA);
+
+    return textureBufferID;
+}
+
+void GameWindow::setupTextures(){
+    textureID_.push_back(loadAndBufferImage("./Image/ash_uvgrid01.jpg", GL_TEXTURE0, 1024, 1024));
+    textureID_.push_back(loadAndBufferImage("./Image/ash_uvgrid06.jpg", GL_TEXTURE0, 1024, 1024));
+    textureID_.push_back(loadAndBufferImage("./Image/shana.png", GL_TEXTURE0, 750, 1064));
+}
 
 int GameWindow::loadShader(std::string filename, int type){
     std::ifstream read(filename);
@@ -51,6 +90,8 @@ void GameWindow::setupShaders(){
     glBindAttribLocation(pID_, 0, "in_Position");
     // Color information will be attribute 1
     glBindAttribLocation(pID_, 1, "in_Color");
+    // Texture information will be attribute 2
+    glBindAttribLocation(pID_, 2, "in_TextureCoord");
 
     glLinkProgram(pID_);
     glValidateProgram(pID_);
@@ -64,29 +105,25 @@ void GameWindow::setupShaders(){
 
 void GameWindow::setupQuad(){
     //Vertices
-    VertexData quadVertices[] = {
-        { -0.5f, 0.5f, 0.0f, 1.0f },  //Left-Top ID: 0
-        { -0.5f, -0.5f, 0.0f, 1.0f }, //Left-Bottom ID:1
-        { 0.5f, -0.5f, 0.0f, 1.0f },  //Right-Bottom ID:2
-        { 0.5f, 0.5f, 0.0f, 1.0f }    //Right-Top ID:3
-    };
+    // initialized as such:
+    // {position data}, {color data}, {UV-Mapping Data}
+    VertexData v0 = { { -1, 1, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0, 0 } }; // Left-Top
+    VertexData v1 = { { -1, -1, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }, { 0, 1 } }; // Left-Bottom
+    VertexData v2 = { { 1, -1, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }, { 1, 1 } }; // Right-Bottom
+    VertexData v3 = { { 1, 1, 0.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 1, 0 } }; // Right-Top
 
-    //The colors that each vertex will in respective with quadVertices
-    VertexData colors[] = {
-            { 1.0f, 0.0f, 0.0f, 1.0f },
-            { 0.0f, 1.0f, 0.0f, 1.0f },
-            { 0.0f, 0.0f, 1.0f, 1.0f },
-            { 1.0f, 1.0f, 1.0f, 1.0f }
-    };
+    VertexData quadVertices[] = { v0, v1, v2, v3 };
 
     //OpenGL expects to draw vertices in counter-clockwise order by default
+    //So we create an array called quads that determine the vertex for us
+    //to use to make a square. Note that we need two triangles to make a
+    //a square
     byte quads[] = {
         // Left-Bottom Triangle
         0, 1, 2,
         // Right-Top Triangle
         2, 3, 0
     };
-    
 
     //Create a Vertex Array Object in memory (glGenVertexArrays)
     //Select the newly created Vertex Array Object (glBindVertexArray)
@@ -97,21 +134,18 @@ void GameWindow::setupQuad(){
     //Create a new Vertex Buffer Object (glGenBuffers)
     //Select the newly created Vertex Buffer Object (glBindBuffer)
     //A Vertex Buffer Object is a collection of Vectors which in this case
-    //Resemble the location of each vertex.
+    //Holds the position of the vertex
+    //Holds the color information of the vertex
     glGenBuffers(1, &bufferID_);
     glBindBuffer(GL_ARRAY_BUFFER, bufferID_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
     //Put the Vertex Buffer Object in the attribute list at index 0
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(VertexData),
         (GLvoid *)offsetof(VertexData, positions));
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    //Create a new Vertex Color Object
-    glGenBuffers(1, &colorID_);
-    glBindBuffer(GL_ARRAY_BUFFER, colorID_);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexData),
-        (GLvoid *)offsetof(VertexData, positions));
+        (GLvoid *)offsetof(VertexData, color));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData),
+        (GLvoid *)offsetof(VertexData, UVPositions));
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     //Deselect the Vertex Buffer Object and Vertex Array Object
@@ -145,13 +179,21 @@ void GameWindow::setupGL(int width, int height, const char* winTitle){
     }
 
     glViewport(0, 0, width, height);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    gluOrtho2D(0, width, 0, height);
+
+    glMatrixMode(GL_MODELVIEW);
 }
 
 GameWindow::GameWindow(int width, int height, const char* winTitle)
-    :vertexID_{ 0 }, bufferID_{ 0 }, colorID_{ 0 }, indicesID_{ 0 }, vsID_{ 0 }, fsID_{ 0 }, pID_{ 0 }{
+    :vertexID_{ 0 }, bufferID_{ 0 }, indicesID_{ 0 }, vsID_{ 0 }, fsID_{ 0 }, pID_{ 0 }{
     setupGL(width, height, winTitle);
     setupQuad();
     setupShaders();
+    setupTextures();
 }
 
 GameWindow::~GameWindow(){
@@ -183,21 +225,36 @@ GLFWwindow* GameWindow::getWindow(){
     return window_;
 }
 
-void GameWindow::render(){
+void GameWindow::render(){  
+    int textureSelector = 0;
+
+    if (glfwGetKey(window_, GLFW_KEY_1) == GLFW_PRESS)
+        textureSelector = 1;
+    else if (glfwGetKey(window_, GLFW_KEY_2) == GLFW_PRESS)
+        textureSelector = 2;
+
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Use shader program we created
     glUseProgram(pID_);
+
+    // Bind the texture
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureID_[textureSelector]);
 
 
     //Bind to the Vertex Object Array with information about quad
     glBindVertexArray(vertexID_);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
 
     //Bind to the Index Vertex Buffer Object, which holds information about the order of the vertices.
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID_);
 
+    glLoadIdentity();
+
+    glTranslatef(200, 200, NULL);
     //Draw the vertices
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
 
@@ -205,7 +262,9 @@ void GameWindow::render(){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
     glBindVertexArray(0);
+
     glUseProgram(0);
 
     glfwSwapBuffers(window_);

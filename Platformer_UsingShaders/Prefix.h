@@ -4,7 +4,9 @@
 #include <Windows.h>
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
+#include <SOIL.h>
 #include <cstdio>
 #include <iostream>
 #include <sstream>
+#include "VertexData.h"
 #endif
