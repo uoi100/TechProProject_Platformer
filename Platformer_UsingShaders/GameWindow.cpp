@@ -6,12 +6,79 @@
 // We want to render load and buffer images for drawing
 GLuint loadAndBufferImage(const char* fileName, int textureUnit, int width, int height){
 
-    GLuint textureBufferID = SOIL_load_OGL_texture(
+    ILuint imageID;
+    GLuint textureBufferID;
+    
+    /*
+    textureBufferID= SOIL_load_OGL_texture(
         fileName,
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_MULTIPLY_ALPHA | SOIL_FLAG_MIPMAPS);
+        SOIL_FLAG_INVERT_Y | SOIL_FLAG_MULTIPLY_ALPHA | SOIL_FLAG_NTSC_SAFE_RGB);
+    */
 
+    ilGenImages(1, &imageID);
+    ilBindImage(imageID);
+
+    // Load the image based on the file directory given
+    if (!ilLoadImage(fileName)){
+        std::string error;
+        switch (ilGetError()){
+        case IL_COULD_NOT_OPEN_FILE: error = "The file pointed to by FileName could not be opened. Either the file does not exist or is in use by another process. \n"; break;
+        case IL_ILLEGAL_OPERATION: error = "There is currently no image bound. Use ilGenImages and ilBindImage before calling this function. \n"; break;
+        case IL_INVALID_EXTENSION: error = "The file could not be loaded based on extension or header. \n"; break;
+        case IL_INVALID_PARAM: error = "FileName was not valid. It was most likely NULL. \n"; break;
+        }
+        OutputDebugString(error.c_str());
+    }
+
+    // Check that the image contains data, if not clean up
+    ILubyte *data = ilGetData();
+    if (!data){
+        ilBindImage(0);
+        ilDeleteImages(1, &textureBufferID);
+        OutputDebugString("There is no data\n");
+        return 0;
+    }
+    else
+        OutputDebugString("There is data\n");
+
+    int const imageWidth = ilGetInteger(IL_IMAGE_WIDTH);
+    int const imageHeight = ilGetInteger(IL_IMAGE_HEIGHT);
+    int const imageType = ilGetInteger(IL_IMAGE_TYPE);   // matches OpenGL
+    int const imageFormat = ilGetInteger(IL_IMAGE_FORMAT); // matches OpenGL
+
+    // Generate a texture name
+    glGenTextures(1, &textureBufferID);
+    glActiveTexture(textureUnit);
+    glBindTexture(GL_TEXTURE_2D, textureBufferID);
+
+    // Set the pixel store parameters
+    glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0); // rows are tightly packed
+    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+    glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // pixels are tightly packed
+
+    // Upload the texture data and generate mip maps (for scaling)
+    glTexImage2D(GL_TEXTURE_2D, 0, imageFormat, imageWidth, imageHeight, 0, imageFormat, imageType, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    // Setup the ST(UV) coordinate system
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // Setup what to do when the texture has to be scaled
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+    //glGenTextures(1, &textureBufferID);
+
+    if (ilGetError()){
+        OutputDebugString("Some Error Occured with DevIL\n");
+    }
+
+    /*
     if (textureBufferID == 0)
         return NULL;
 
@@ -28,14 +95,10 @@ GLuint loadAndBufferImage(const char* fileName, int textureUnit, int width, int 
     // Sets Texture Environment, in this case we want to set the environment,
     // to make the image transparent
 
-    // Setup the ST(UV) coordinate system
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    // Setup what to do when the texture has to be scaled
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     //glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ONE_MINUS_SRC_ALPHA);
+
+    */
 
     return textureBufferID;
 }
@@ -193,6 +256,7 @@ GameWindow::GameWindow(int width, int height, const char* winTitle)
     setupGL(width, height, winTitle);
     setupQuad();
     setupShaders();
+    ilInit();
     setupTextures();
 }
 
