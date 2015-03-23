@@ -166,10 +166,10 @@ void GameWindow::setupQuad(){
     //Vertices
     // initialized as such:
     // {position data}, {color data}, {UV-Mapping Data}
-    VertexData v0 = { { -1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0, 0 } }; // Left-Top
-    VertexData v1 = { { -1.0f, -1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }, { 0, 1 } }; // Left-Bottom
-    VertexData v2 = { { 1.0f, -1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }, { 1, 1 } }; // Right-Bottom
-    VertexData v3 = { { 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 1, 0 } }; // Right-Top
+    VertexData v0 = { { 0, 480, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0, 0 } }; // Left-Top
+    VertexData v1 = { { 0, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }, { 0, 1 } }; // Left-Bottom
+    VertexData v2 = { { -300, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }, { 1, 1 } }; // Right-Bottom
+    VertexData v3 = { { -300, 480, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 1, 0 } }; // Right-Top
 
     quadVertices_[0] = v0;
     quadVertices_[1] = v1;
@@ -234,12 +234,11 @@ void GameWindow::setupDevIL(){
 
 void GameWindow::setupMatrices(){
     glm::mat4 trans;
-    float t = glfwGetTime();
 
     //Flips image upside down
     //trans = glm::rotate(trans, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-    GLint uniTrans = glGetUniformLocation(pID_, "trans");
+    //GLint uniTrans = glGetUniformLocation(pID_, "trans");
 
     // Rotating an image counter-clockwise
     /*
@@ -250,11 +249,73 @@ void GameWindow::setupMatrices(){
         );
     */
 
+    //Move Vertex to the right    
+    /*
     trans = glm::translate(
         trans,
-        glm::vec3(t * 1.0f, 0.0f, 0.0f));
+        glm::vec3(positionX, 0.0f, 0.0f));
+    */
+    positionX += .1f;
+
+    if (positionX >= 100.0f)
+        positionX = 0;
+   
+    float horizontalAngle = 3.14f;
+    float verticalAngle = 0.0f;
+
+    glm::vec3 direction(
+        cos(verticalAngle) * sin(horizontalAngle),
+        sin(verticalAngle),
+        cos(verticalAngle) * cos(horizontalAngle)
+        );
+
+    glm::vec3 right = glm::vec3(
+        sin(horizontalAngle - 3.14f/2.0f),
+        0,
+        cos(horizontalAngle - 3.14f/2.0f)
+    );
+
+    glm::vec3 up = glm::cross(right, direction);
+
+    float t = glfwGetTime();
+    float deltaTime = float(t - lastTime);
+
+    lastTime = t;
+
+    //position.x = 0;
+
+    //position += right * deltaTime * 30.0f;
+
+
+    if (position.x >= width_)
+        position.x = 0;
+
+    std::stringstream ss;
+
+    ss << position.x << " " << position.y << " " << position.z << std::endl;
+
+    OutputDebugString(ss.str().c_str());
+    
+    // Projection Matrix
+    glm::mat4 projection = glm::ortho(0.0f, -(float)width_ , 0.0f, (float)height_, 0.1f, 100.0f);
+    // Cameria Matrix
+    glm::mat4 view = glm::lookAt(
+        position, // Camera is at (4, 3, 3) in world space
+        position+direction, // Looks at the origin
+        glm::vec3(0, 1, 0) // Head of the camera is up (set to 0, -1, 0 to look upside-down)
+    );
+
+    // Model Matrix: an identity model (model will be at the origin)
+    glm::mat4 model = glm::mat4(1.0f);
       
-    glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
+    glm::mat4 MVP = projection * view * model;
+
+    GLuint matrixID = glGetUniformLocation(pID_, "mvp");
+
+    // Send our transformation to the currently bound shader,
+    // in the "MVP" uniform
+    // for each model you render, since the MVP will be different (atleast the M part)
+    glUniformMatrix4fv(matrixID, 1, GL_FALSE, glm::value_ptr(MVP));
 }
 
 void GameWindow::setupGL(int width, int height, const char* winTitle){
@@ -357,7 +418,7 @@ void GameWindow::render(){
 
     glLoadIdentity();
 
-    setupMatrices();
+    //setupMatrices();
     //Draw the vertices
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
 
@@ -375,9 +436,46 @@ void GameWindow::render(){
 }
 
 void GameWindow::update(){
+    int textureSelector = 0;
+
+    if (glfwGetKey(window_, GLFW_KEY_1) == GLFW_PRESS)
+        textureSelector = 1;
+    else if (glfwGetKey(window_, GLFW_KEY_2) == GLFW_PRESS)
+        textureSelector = 2;
+
+    glClear(GL_COLOR_BUFFER_BIT);
+    // Use shader program we created
+    glUseProgram(pID_);
+
+    // Bind the texture
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureID_[textureSelector]);
+
+    //Bind to the Vertex Object Array with information about quad
+    glBindVertexArray(vertexID_);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+
+    //Bind to the Index Vertex Buffer Object, which holds information about the order of the vertices.
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID_);
+
     // Update the vertices in the VBO, first bind the VBO
     glBindBuffer(GL_ARRAY_BUFFER, vertexID_);
 
-    // Unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    setupMatrices();
+
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+
+    //Deselect
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
+    glBindVertexArray(0);
+
+    glUseProgram(0);
+
+    glfwSwapBuffers(window_);
+    glfwPollEvents();
 }

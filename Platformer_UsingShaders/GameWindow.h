@@ -6,6 +6,9 @@ private:
     GLFWwindow* window_;
     int width_, height_;
     const double PI = 3.14159265358979323846;
+    float positionX;
+    glm::vec3 position = glm::vec3(0, 0, 2);
+    float lastTime = 0;
 
     // Quad variables
     GLuint  vertexID_;
