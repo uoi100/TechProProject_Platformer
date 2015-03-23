@@ -166,10 +166,10 @@ void GameWindow::setupQuad(){
     //Vertices
     // initialized as such:
     // {position data}, {color data}, {UV-Mapping Data}
-    VertexData v0 = { { 0, 480, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0, 0 } }; // Left-Top
+    VertexData v0 = { { 0, -480, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0, 0 } }; // Left-Top
     VertexData v1 = { { 0, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }, { 0, 1 } }; // Left-Bottom
     VertexData v2 = { { -300, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }, { 1, 1 } }; // Right-Bottom
-    VertexData v3 = { { -300, 480, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 1, 0 } }; // Right-Top
+    VertexData v3 = { { -300, -480, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 1, 0 } }; // Right-Top
 
     quadVertices_[0] = v0;
     quadVertices_[1] = v1;
@@ -272,10 +272,16 @@ void GameWindow::setupMatrices(){
     glm::vec3 right = glm::vec3(
         sin(horizontalAngle - 3.14f/2.0f),
         0,
-        cos(horizontalAngle - 3.14f/2.0f)
+        0
     );
 
     glm::vec3 up = glm::cross(right, direction);
+
+    glm::vec3 moveUp = glm::vec3(
+        0,
+        sin(verticalAngle - 3.14 / 2.0f),
+        0
+    );
 
     float t = glfwGetTime();
     float deltaTime = float(t - lastTime);
@@ -284,8 +290,8 @@ void GameWindow::setupMatrices(){
 
     //position.x = 0;
 
-    //position += right * deltaTime * 30.0f;
-
+    position += right * deltaTime * 30.0f;
+    position -= moveUp * deltaTime * 30.0f;
 
     if (position.x >= width_)
         position.x = 0;
@@ -297,12 +303,12 @@ void GameWindow::setupMatrices(){
     OutputDebugString(ss.str().c_str());
     
     // Projection Matrix
-    glm::mat4 projection = glm::ortho(0.0f, -(float)width_ , 0.0f, (float)height_, 0.1f, 100.0f);
+    glm::mat4 projection = glm::ortho(0.0f, -(float)width_ , 0.0f, -(float)height_, 0.1f, 100.0f);
     // Cameria Matrix
     glm::mat4 view = glm::lookAt(
         position, // Camera is at (4, 3, 3) in world space
         position+direction, // Looks at the origin
-        glm::vec3(0, 1, 0) // Head of the camera is up (set to 0, -1, 0 to look upside-down)
+        up // Head of the camera is up (set to 0, -1, 0 to look upside-down)
     );
 
     // Model Matrix: an identity model (model will be at the origin)
