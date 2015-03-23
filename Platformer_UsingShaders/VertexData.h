@@ -8,7 +8,7 @@
  * where U is the X position and V is the Y position, the origin of the mapping is at the top left.
  */
 struct VertexData{
-    GLfloat positions[4];
+    GLfloat positions[2];
     GLfloat color[4];
     GLfloat UVPositions[2];
 };

@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include "GLSLParser.h"
+#include <cmath>
 
 // We want to render load and buffer images for drawing
 GLuint loadAndBufferImage(const char* fileName, int textureUnit, int width, int height){
@@ -9,6 +10,7 @@ GLuint loadAndBufferImage(const char* fileName, int textureUnit, int width, int 
     ILuint imageID;
     GLuint textureBufferID;
     
+
     /*
     textureBufferID= SOIL_load_OGL_texture(
         fileName,
@@ -32,6 +34,8 @@ GLuint loadAndBufferImage(const char* fileName, int textureUnit, int width, int 
         OutputDebugString(error.c_str());
     }
 
+    ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+
     // Check that the image contains data, if not clean up
     ILubyte *data = ilGetData();
     if (!data){
@@ -48,10 +52,15 @@ GLuint loadAndBufferImage(const char* fileName, int textureUnit, int width, int 
     int const imageType = ilGetInteger(IL_IMAGE_TYPE);   // matches OpenGL
     int const imageFormat = ilGetInteger(IL_IMAGE_FORMAT); // matches OpenGL
 
+
     // Generate a texture name
     glGenTextures(1, &textureBufferID);
     glActiveTexture(textureUnit);
     glBindTexture(GL_TEXTURE_2D, textureBufferID);
+
+    //Enable Texture Transparency
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
     // Set the pixel store parameters
     glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
@@ -59,11 +68,11 @@ GLuint loadAndBufferImage(const char* fileName, int textureUnit, int width, int 
     glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
     glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // pixels are tightly packed
-
+    
     // Upload the texture data and generate mip maps (for scaling)
-    glTexImage2D(GL_TEXTURE_2D, 0, imageFormat, imageWidth, imageHeight, 0, imageFormat, imageType, data);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
-
     // Setup the ST(UV) coordinate system
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -78,35 +87,13 @@ GLuint loadAndBufferImage(const char* fileName, int textureUnit, int width, int 
         OutputDebugString("Some Error Occured with DevIL\n");
     }
 
-    /*
-    if (textureBufferID == 0)
-        return NULL;
-
-    // Create a new texture object in memory and bind it
-    glActiveTexture(textureUnit);
-    glBindTexture(GL_TEXTURE_2D, textureBufferID);
-
-    // ALL RGB bytes are aligned to each other and each component is 1 byte
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    // Upload the texture data and generate mip maps (for scaling)
-    //glGenerateMipmap(GL_TEXTURE_2D);
-
-    // Sets Texture Environment, in this case we want to set the environment,
-    // to make the image transparent
-
-
-    //glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ONE_MINUS_SRC_ALPHA);
-
-    */
-
     return textureBufferID;
 }
 
 void GameWindow::setupTextures(){
     textureID_.push_back(loadAndBufferImage("./Image/ash_uvgrid01.jpg", GL_TEXTURE0, 1024, 1024));
-    textureID_.push_back(loadAndBufferImage("./Image/ash_uvgrid06.jpg", GL_TEXTURE0, 1024, 1024));
-    textureID_.push_back(loadAndBufferImage("./Image/shana.png", GL_TEXTURE0, 750, 1064));
+    textureID_.push_back(loadAndBufferImage("./Image/ash_uvgrid06.jpg", GL_TEXTURE0, 750, 1064));
+    textureID_.push_back(loadAndBufferImage("./Image/Shana.png", GL_TEXTURE0, 1, 1));
 }
 
 int GameWindow::loadShader(std::string filename, int type){
@@ -136,6 +123,15 @@ int GameWindow::loadShader(std::string filename, int type){
         return shaderID;
     return 0;
 }
+
+float GameWindow::coTangent(float angle){
+    return (float)(1.0f / glm::tan(angle));
+}
+
+float GameWindow::degreesToRadians(float degrees){
+    return degrees * (float)(PI / 180.0);
+}
+
 
 void GameWindow::setupShaders(){
     int errorCheckValue = glGetError();
@@ -170,12 +166,15 @@ void GameWindow::setupQuad(){
     //Vertices
     // initialized as such:
     // {position data}, {color data}, {UV-Mapping Data}
-    VertexData v0 = { { -1, 1, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0, 0 } }; // Left-Top
-    VertexData v1 = { { -1, -1, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }, { 0, 1 } }; // Left-Bottom
-    VertexData v2 = { { 1, -1, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }, { 1, 1 } }; // Right-Bottom
-    VertexData v3 = { { 1, 1, 0.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 1, 0 } }; // Right-Top
+    VertexData v0 = { { -1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0, 0 } }; // Left-Top
+    VertexData v1 = { { -1.0f, -1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }, { 0, 1 } }; // Left-Bottom
+    VertexData v2 = { { 1.0f, -1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }, { 1, 1 } }; // Right-Bottom
+    VertexData v3 = { { 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 1, 0 } }; // Right-Top
 
-    VertexData quadVertices[] = { v0, v1, v2, v3 };
+    quadVertices_[0] = v0;
+    quadVertices_[1] = v1;
+    quadVertices_[2] = v2;
+    quadVertices_[3] = v3;
 
     //OpenGL expects to draw vertices in counter-clockwise order by default
     //So we create an array called quads that determine the vertex for us
@@ -201,9 +200,9 @@ void GameWindow::setupQuad(){
     //Holds the color information of the vertex
     glGenBuffers(1, &bufferID_);
     glBindBuffer(GL_ARRAY_BUFFER, bufferID_);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices_), quadVertices_, GL_STATIC_DRAW);
     //Put the Vertex Buffer Object in the attribute list at index 0
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(VertexData),
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData),
         (GLvoid *)offsetof(VertexData, positions));
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexData),
         (GLvoid *)offsetof(VertexData, color));
@@ -224,6 +223,40 @@ void GameWindow::setupQuad(){
 
 }
 
+void GameWindow::setupDevIL(){
+    ilInit();
+    iluInit();
+    ilutInit();
+    ilOriginFunc(IL_ORIGIN_UPPER_LEFT);
+    ilEnable(IL_ORIGIN_SET);
+    ilutRenderer(ILUT_OPENGL);
+}
+
+void GameWindow::setupMatrices(){
+    glm::mat4 trans;
+    float t = glfwGetTime();
+
+    //Flips image upside down
+    //trans = glm::rotate(trans, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+    GLint uniTrans = glGetUniformLocation(pID_, "trans");
+
+    // Rotating an image counter-clockwise
+    /*
+    trans = glm::rotate(
+        trans,
+        t * glm::radians(180.0f),
+        glm::vec3(0.0f, 0.0f, 1.0f)
+        );
+    */
+
+    trans = glm::translate(
+        trans,
+        glm::vec3(t * 1.0f, 0.0f, 0.0f));
+      
+    glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
+}
+
 void GameWindow::setupGL(int width, int height, const char* winTitle){
     window_ = glfwCreateWindow(width, height, winTitle, NULL, NULL);
 
@@ -241,6 +274,9 @@ void GameWindow::setupGL(int width, int height, const char* winTitle){
         exit(EXIT_FAILURE);
     }
 
+    glEnable(GL_BLEND);
+
+    
     glViewport(0, 0, width, height);
 
     glMatrixMode(GL_PROJECTION);
@@ -249,15 +285,19 @@ void GameWindow::setupGL(int width, int height, const char* winTitle){
     gluOrtho2D(0, width, 0, height);
 
     glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 }
 
 GameWindow::GameWindow(int width, int height, const char* winTitle)
-    :vertexID_{ 0 }, bufferID_{ 0 }, indicesID_{ 0 }, vsID_{ 0 }, fsID_{ 0 }, pID_{ 0 }{
+:width_{ width }, height_{ height }, vertexID_{ 0 }, bufferID_{ 0 }, indicesID_{ 0 }, vsID_{ 0 },
+fsID_{ 0 }, pID_{ 0 }, projectionMatrixLocation_{ 0 }, viewMatrixLocation_{ 0 }, modelMatrixLocation_{ 0 }
+{
     setupGL(width, height, winTitle);
     setupQuad();
     setupShaders();
-    ilInit();
+    setupDevIL();
     setupTextures();
+    setupMatrices();
 }
 
 GameWindow::~GameWindow(){
@@ -306,7 +346,6 @@ void GameWindow::render(){
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID_[textureSelector]);
 
-
     //Bind to the Vertex Object Array with information about quad
     glBindVertexArray(vertexID_);
     glEnableVertexAttribArray(0);
@@ -318,7 +357,7 @@ void GameWindow::render(){
 
     glLoadIdentity();
 
-    glTranslatef(200, 200, NULL);
+    setupMatrices();
     //Draw the vertices
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
 
@@ -336,5 +375,9 @@ void GameWindow::render(){
 }
 
 void GameWindow::update(){
+    // Update the vertices in the VBO, first bind the VBO
+    glBindBuffer(GL_ARRAY_BUFFER, vertexID_);
 
+    // Unbind
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
