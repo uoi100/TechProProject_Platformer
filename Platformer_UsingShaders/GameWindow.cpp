@@ -290,12 +290,7 @@ void GameWindow::setupGL(int width, int height, const char* winTitle){
         exit(EXIT_FAILURE);
     }
 
-    glEnable(GL_BLEND);
-    
-    //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
-    //glBlendEquation(GL_FUNC_ADD);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
+    glEnable(GL_BLEND); 
 }
 
 GameWindow::GameWindow(int width, int height, const char* winTitle)
@@ -384,7 +379,6 @@ void GameWindow::render(){
 }
 
 void GameWindow::update(){
-    //glBindBuffer(GL_ARRAY_BUFFER, vertexID_);
 
     player_->update();
 
