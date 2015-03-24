@@ -1,5 +1,6 @@
 #include "Prefix.h"
 #include <vector>
+#include "Sprite.h"
 
 class GameWindow{
 private:
@@ -36,6 +37,12 @@ private:
     glm::vec3 modelAngle_;
     glm::vec3 modelScale_;
     glm::vec3 cameraPos_;
+
+    //Game Variables
+    Sprite *player_;
+    Sprite *background_;
+    Sprite *overlay_;
+
     // Functions
 
     int loadShader(std::string filename, int type);

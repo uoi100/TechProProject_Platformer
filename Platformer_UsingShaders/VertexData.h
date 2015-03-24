@@ -1,3 +1,5 @@
+#ifndef VERTEXDATA_H
+#define VERTEXDATA_H
 #include "Prefix.h"
 
 /*
@@ -9,6 +11,8 @@
  */
 struct VertexData{
     GLfloat positions[3];
-    GLfloat color[4];
     GLfloat UVPositions[2];
 };
+
+void setupVertexDataQuad(VertexData *quad, int width, int height);
+#endif

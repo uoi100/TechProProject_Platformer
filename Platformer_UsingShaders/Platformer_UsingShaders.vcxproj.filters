@@ -27,6 +27,12 @@
     <ClCompile Include="GLSLParser.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexData.cpp">
+      <Filter>Resource Files\VertexData</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Prefix.h">
@@ -40,6 +46,9 @@
     </ClInclude>
     <ClInclude Include="VertexData.h">
       <Filter>Resource Files\VertexData</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
