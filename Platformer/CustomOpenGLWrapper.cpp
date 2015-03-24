@@ -106,5 +106,102 @@ void createVertex(GLuint *vertexID, GLuint *bufferID, GLuint *indicesID, int wid
  *@textureUnit - The texture unit this is buffering for
  */
 GLuint loadAndBufferImage(const char* fileName, int textureUnit){
+    ILuint imageID;
+    GLuint textureBufferID;
 
+    // Create a Image in the buffer and store the pointer to imageID
+    ilGenImages(1, &imageID);
+
+    // Select(Bind) the image;
+    ilBindImage(imageID);
+
+    // Load the image from fileName
+    // If the file fails to load then output an error
+    if (!ilLoadImage(fileName)){
+        std::string error;
+        switch (ilGetError()){
+        case IL_COULD_NOT_OPEN_FILE: error = "The file pointed to by FileName could not be opened. Either the file does not exist or is in use by another process. \n"; break;
+        case IL_ILLEGAL_OPERATION: error = "There is currently no image bound. Use ilGenImages and ilBindImage before calling this function. \n"; break;
+        case IL_INVALID_EXTENSION: error = "The file could not be loaded based on extension or header. \n"; break;
+        case IL_INVALID_PARAM: error = "FileName was not valid. It was most likely NULL. \n"; break;
+        }
+
+        // Output the error string
+        OutputDebugString(error.c_str());
+    }
+
+    // Convert the image to an image with RGBA values and the bytes are unsigned
+    ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+
+    // Get the image data in unsigned bytes
+    ILubyte *data = ilGetData();
+
+    // Check if there is actually data stored
+    if (!data){
+        ilBindImage(0);
+        OutputDebugString("There is no data\n");
+        return 0;
+    }
+
+    // Get the Image Properties
+    int const imageWidth = ilGetInteger(IL_IMAGE_WIDTH);
+    int const imageHeight = ilGetInteger(IL_IMAGE_HEIGHT);
+    int const imageFormat = ilGetInteger(IL_IMAGE_FORMAT);
+
+    // Create a Texture object in memory and store the pointer into textureBufferID
+    glGenTextures(1, &textureBufferID);
+
+    // Set the active texture to the texture unit
+    glActiveTexture(textureUnit);
+
+    // Select(bind) the texture object
+    glBindTexture(GL_TEXTURE_2D, textureBufferID);
+
+    // Set the pixel store parameters
+
+    // Set to false to tell OpenGL that the byte ordering
+    // for color components should not be reversed
+    glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
+    // Set to 0 to indicate that the pixels in the row are tightly packed
+    // as in there is no offset required
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+    // Sets the number of components / indices in each pixels as 0
+    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+    // Sets the offset to each pointer to 0
+    glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+    // Specifiy the alignment requirement for each pixel row in memory
+    // in this case we set it to 1 for byte alignment
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    // Upload the texture data to memory
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    
+    // Generate Mipmaps for scaling
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    // Setup the Texture Coordinate System this is how we draw textures onto our vertex objects
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // Setup what to do when the texture has to be scaled
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+    // Check if any errors has occured
+    if (ilGetError()){
+        ilBindImage(0);
+        ilDeleteImages(1, &imageID);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDeleteTextures(1, &textureBufferID);
+        OutputDebugString("Some Error Occured with DevIL\n");
+        return 0;
+    }
+
+    // Deselect the Image
+    ilBindImage(0);
+
+    // Delete the Image since we already stored the data into buffer
+    ilDeleteImages(1, &imageID);
+
+    return textureBufferID;
 }

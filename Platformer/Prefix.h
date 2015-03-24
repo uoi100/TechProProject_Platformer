@@ -14,8 +14,8 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
-#include "Vector2D.h"
 #include "BoundingBox.h"
 #include "VertexData.h"
 #include "CustomOpenGLWrapper.h"
+#include "Vector2D.h"
 #endif

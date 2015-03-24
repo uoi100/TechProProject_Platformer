@@ -61,7 +61,7 @@ GLuint loadAndBufferImage(const char* fileName, int textureUnit, int width, int 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // pixels are tightly packed
     
     // Upload the texture data and generate mip maps (for scaling)
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    //glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
     // Setup the ST(UV) coordinate system
@@ -77,6 +77,9 @@ GLuint loadAndBufferImage(const char* fileName, int textureUnit, int width, int 
     if (ilGetError()){
         OutputDebugString("Some Error Occured with DevIL\n");
     }
+
+    ilBindImage(0);
+    ilDeleteImages(1, &imageID);
 
     return textureBufferID;
 }

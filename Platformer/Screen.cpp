@@ -1,10 +1,9 @@
 #include "Screen.h"
 
 Screen::Screen(int width, int height){
-width_ = width;
-height_ = height;
-switchScreen_ = false;
-screenIndex_ = 0;
+    winSize_ = glm::vec2(width, height);
+    switchScreen_ = false;
+    screenIndex_ = 0;
 }
 
 bool Screen::switchScreen(){

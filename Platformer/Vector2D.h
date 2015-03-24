@@ -1,9 +1,8 @@
-#include <GLFW\glfw3.h>
+#ifndef VECTOR2D_H
+#define VECTOR2D_H
+#include "Prefix.h"
 
-typedef struct{
-    GLfloat x;
-    GLfloat y;
-} Vector2D;
-
-Vector2D makeVector2D(GLfloat x, GLfloat y);
-Vector2D addVector2D(Vector2D first, Vector2D second);
+glm::vec2 makeVector2D(GLfloat x, GLfloat y);
+glm::vec2 addVector2D(glm::vec2 first, glm::vec2 second);
+glm::vec3 addVector3D(glm::vec3 first, glm::vec2 second);
+#endif

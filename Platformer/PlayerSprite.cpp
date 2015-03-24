@@ -10,18 +10,18 @@ void PlayerSprite::getKeyInput(){
         jumping_ = true;
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT)
         && position_.x >= boundingBox_.left + width_/2){
-        position_ = addVector2D(position_, makeVector2D(-4.0f, 0.0f));
+        position_ = addVector3D(position_, makeVector2D(-4.0f, 0.0f));
         facingRight_ = false;
     }
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_RIGHT)
         && position_.x <= boundingBox_.right - width_/2){
-        position_ = addVector2D(position_, makeVector2D(4.0f, 0.0f));
+        position_ = addVector3D(position_, makeVector2D(4.0f, 0.0f));
         facingRight_ = true;
     }
 }
 
-PlayerSprite::PlayerSprite(GLuint textureBufferID, Vector2D position, int width, int height)
-:Sprite(textureBufferID, position, width, height){
+PlayerSprite::PlayerSprite(GLfloat textureID, glm::vec2 position, glm::vec2 size, glm::vec2 windowSize)
+:Sprite(textureID, position, size, windowSize){
     falling_ = true;
     jumping_ = false;
     maxJumpHeight = 100;
@@ -29,7 +29,8 @@ PlayerSprite::PlayerSprite(GLuint textureBufferID, Vector2D position, int width,
 }
 
 void PlayerSprite::render(){
-    glBindTexture(GL_TEXTURE_2D, textureBufferID_);
+    /*
+    glBindTexture(GL_TEXTURE_2D, textureID_);
 
     //Resets the Transformations
     glLoadIdentity();
@@ -46,12 +47,13 @@ void PlayerSprite::render(){
     //Undo the translation of the origin    
 
     glDrawArrays(GL_QUADS, 0, 4);
+    */
 }
 
 void PlayerSprite::update(){
     getKeyInput();
     if (jumping_){
-        position_ = addVector2D(position_, makeVector2D(0.0f, 5.0f));
+        position_ = addVector3D(position_, makeVector2D(0.0f, 5.0f));
         if (currentJumpHeight < maxJumpHeight){
             currentJumpHeight+= 5;
         }
@@ -68,7 +70,7 @@ void PlayerSprite::update(){
             position_.y = 0 + height_/2;
         }
         else
-        position_ = addVector2D(position_, makeVector2D(0.0f, -5.0f));
+        position_ = addVector3D(position_, makeVector2D(0.0f, -5.0f));
     }
 }
 

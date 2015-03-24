@@ -3,6 +3,15 @@
 #include <string>
 #include "GLSLFunctions.h"
 
+/*
+ *@Author Calvin Truong and Wesley Dale
+ *@Version 2.0
+ *@Description: The main window context that will be rendered on
+    The game window contains different screens such as the title screen
+    and game screen and determines which screen will be drawn
+    on the window context.
+ */
+
 // Sets up OpenGL and Glew which allows for the graphics operations to work.
 /*
  *@Description: Initialize openGL using glfw(openGL & win32 wrapper) which creates the window context for graphic functions to draw on,
@@ -80,6 +89,9 @@ width_{ width }, height_{ height }{
     fragmentShaderID_ = 0;
     setupShaders(&programID_, &vertexShaderID_, &fragmentShaderID_);
 
+    //setup our Development Image Library (DevIL)
+    setupDevIL();
+
     currentScreen = new TitleScreen(width_, height_);
 }
 
@@ -88,18 +100,18 @@ width_{ width }, height_{ height }{
     Responsible for cleaning up memory after we're done using them
  */
 GameWindow::~GameWindow(){
-    delete currentScreen;
-}
 
-/*
- *@Description: When the mouse is clicked, do the following:
-    -Left Click: Shoot a projectile at the position of the player and store it
-    in an array to keep track of.
- *@button - The button that was used with the mouse
- *@action - The action that that button was doing
- */
-void GameWindow::mouseEvent(int button, int action){
-    currentScreen->mouseEvent(button, action);
+    // Delete Shader Pointers
+    glUseProgram(0);
+    glDetachShader(programID_, vertexShaderID_);
+    glDetachShader(programID_, fragmentShaderID_);
+
+    glDeleteShader(vertexShaderID_);
+    glDeleteShader(fragmentShaderID_);
+    glDeleteProgram(programID_);
+
+    // Delete our Screen Pointer
+    delete currentScreen;
 }
 
 /*
@@ -127,13 +139,34 @@ GLFWwindow* GameWindow::getWindow(){
 }
 
 /*
+*@Description: When the mouse is clicked, do the following:
+-Left Click: Shoot a projectile at the position of the player and store it
+in an array to keep track of.
+*@button - The button that was used with the mouse
+*@action - The action that that button was doing
+*/
+void GameWindow::mouseEvent(int button, int action){
+    currentScreen->mouseEvent(button, action);
+}
+
+/*
  *@Description: The main function that calls the render function
  of the current screen to display onto the window context
  */
 void GameWindow::render(){
+    // Clear buffer to preset colors
     glClear(GL_COLOR_BUFFER_BIT);
 
+    // Use the shader program we created in the constructor
+    glUseProgram(programID_);
+
+    // Render our Screen
     currentScreen->render();
+
+    // Deselect our program
+    glUseProgram(0);
+
+    // Tell OpenGL that we are finished drawing and are ready to swap the buffers
 
     glfwSwapBuffers(window_);
     glfwPollEvents();
@@ -148,6 +181,9 @@ void GameWindow::update(){
 
     currentScreen->update();
 
+    // Check if the current Screen wants to change to the next screen
+    // If it does then get the screen index (hardcoded) of the screen
+    // it wants to change to, in this case 1 = the game screen
     if (currentScreen->switchScreen()){
         if (currentScreen->screenIndex() == 1){
             Screen *old = currentScreen;

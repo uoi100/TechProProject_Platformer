@@ -14,7 +14,7 @@ private:
 public:
     void setBoundingBox(BoundingBox boundingBox);
 
-    PlayerSprite(GLuint textureBufferID, Vector2D position, int width, int height);
+    PlayerSprite(GLfloat textureID, glm::vec2 position, glm::vec2 size, glm::vec2 windowSize);
 
     void render();
     void update();

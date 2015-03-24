@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\Vector2D">
-      <UniqueIdentifier>{fc55b71d-5e39-41b3-b68a-750e4b5209c2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\BoundingBox">
       <UniqueIdentifier>{bf9d735e-233e-4870-869f-a0b714361467}</UniqueIdentifier>
     </Filter>
@@ -35,9 +32,6 @@
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Vector2D.cpp">
-      <Filter>Header Files\Vector2D</Filter>
     </ClCompile>
     <ClCompile Include="BoundingBox.cpp">
       <Filter>Header Files\BoundingBox</Filter>
@@ -66,13 +60,13 @@
     <ClCompile Include="GLSLFunctions.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="Vector2D.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PlayerSprite.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector2D.h">
-      <Filter>Header Files\Vector2D</Filter>
     </ClInclude>
     <ClInclude Include="BoundingBox.h">
       <Filter>Header Files\BoundingBox</Filter>
@@ -103,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="GameWindow.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2D.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

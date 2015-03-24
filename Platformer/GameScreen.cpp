@@ -4,8 +4,12 @@
 * Description: Adds enemies into the game
 */
 void GameScreen::addEnemy(){
-    GLfloat positionY = rand() % height_;
-    Sprite* enemy = new Sprite(enemyBufferID_, makeVector2D(width_ + 80, positionY), 32, 32);
+    int height = winSize_.y;
+    GLfloat positionY = rand() % height;
+    glm::vec2 enemySize(32, 32);
+    Sprite* enemy = new Sprite(enemyBufferID_,
+        makeVector2D(winSize_.x + 80, positionY),
+        enemySize, winSize_ );
     enemy->setVelocity(makeVector2D(-5, 0));
     enemy->setRotationVelocity(12);
     enemyArray_->push_back(enemy);
@@ -43,7 +47,7 @@ void GameScreen::checkOutsideScreen(){
     // Check if any projectiles are out of the screen, if they are prepare them for deletion
     for (std::vector<Sprite*>::iterator projectileIterator = projectileArray_->begin();
         projectileIterator != projectileArray_->end(); projectileIterator++)
-    if ((*projectileIterator)->getPosition().x > width_ + (*projectileIterator)->getWidth())
+    if ((*projectileIterator)->getPosition().x > winSize_.x + (*projectileIterator)->getWidth())
         deleteProjectilesArray.push_back(projectileIterator);
 
     // Delete projectiles that are out of the screen
@@ -110,10 +114,10 @@ void GameScreen::checkForCollisions(){
  * This logic also applies on other sprites as well.
  */
 void GameScreen::playerPhysics(){
-    Vector2D playerPosition = player_->getPosition();
+    glm::vec2 playerPosition = player_->getPosition();
     int playerWidth = player_->getWidth() / 2;
     int playerHeight = player_->getHeight() / 2;
-    Vector2D someBlockPositon = someBlock_->getPosition();
+    glm::vec2 someBlockPositon = someBlock_->getPosition();
     // We don't care about the Block's width or height because it is the same
     int blockSize = someBlock_->getWidth() / 2;
 
@@ -141,6 +145,7 @@ void GameScreen::playerPhysics(){
 }
 
 GameScreen::GameScreen(int width, int height) : Screen(width, height){
+    /*
     createVertexBuffer(&vertexArrayObjectID_, &vertexBufferID_, 64, 128);
     createVertexBuffer(&smallVertexArrayObjectID_, &smallVertexBufferID_, 32, 32);
 
@@ -156,6 +161,7 @@ GameScreen::GameScreen(int width, int height) : Screen(width, height){
     player_ = new PlayerSprite(textureBufferID_, makeVector2D(500, 500), 64, 128);
     someBlock_ = new Sprite(textureBufferID_, makeVector2D(width_ / 2, 0), 32, 32);
     player_->setBoundingBox(makeBoundingBox(height_, 0, 0, width_));
+    */
 }
 
 GameScreen::~GameScreen(){
@@ -184,7 +190,8 @@ GameScreen::~GameScreen(){
 void GameScreen::mouseEvent(int button, int action){
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
-        Sprite* projectile = new Sprite(projectileBufferID_, player_->getPosition(), 32, 32);
+        glm::vec2 projectileSize(32, 32);
+        Sprite* projectile = new Sprite(projectileBufferID_, player_->getPosition(), projectileSize, winSize_);
         projectile->setVelocity(makeVector2D(10, 0));
         projectile->setRotationVelocity(36);
         projectileArray_->push_back(projectile);

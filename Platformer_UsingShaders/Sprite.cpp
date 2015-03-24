@@ -24,7 +24,7 @@ void Sprite::matrixTransformation(){
     // M - Model
     // V - View
     // P - Projection
-    glm::mat4 projection = glm::ortho(0.0f, -(float)winSize_.x, 0.0f, -(float)winSize_.y, -100.0f, 100.0f);
+    glm::mat4 projection = glm::ortho(0.0f, -(float)winSize_.x, 0.0f, -(float)winSize_.y, -1.0f, 100.0f);
 
     glm::mat4 view = glm::lookAt(
         position_,
@@ -36,7 +36,10 @@ void Sprite::matrixTransformation(){
 
     glm::mat4 mvp = projection * view * model;
 
-    GLuint matrixID = glGetUniformLocation(programID_, "mvp");
+    GLint getProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &getProgram);
+
+    GLuint matrixID = glGetUniformLocation(getProgram, "mvp");
 
     // Send our transformations to the currently bound shader,
     // in the "mvp" uniform

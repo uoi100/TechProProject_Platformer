@@ -14,24 +14,42 @@ bool TitleScreen::checkButtonCollision(int xpos, int ypos, Sprite* btn){
 }
 
 TitleScreen::TitleScreen(int width, int height): Screen(width,height){
-    createVertexBuffer(&menuButtonVAOID_, &menuButtonVBOID_, 300, 100);
+    const int btnWidth = 300;
+    const int btnHeight = 100;
+    createVertex(&menuButtonVertexID_, &menuButtonBufferID_, &menuButtonIndices_, btnWidth, btnHeight);
 
-    startBtnID_ = loadAndBufferImage("./Image/Start.png");
-    exitBtnID_ = loadAndBufferImage("./Image/Exit.png");
+    startBtnID_ = loadAndBufferImage("./Image/Start.png", GL_TEXTURE0);
+    exitBtnID_ = loadAndBufferImage("./Image/Exit.png", GL_TEXTURE0);
 
-    startBtn_ = new Sprite(startBtnID_, makeVector2D(width_ / 2, height_ / 2), 300, 100);
-    exitBtn_ = new Sprite(startBtnID_, makeVector2D(width_ / 2, height_ / 2 - 200), 300, 100);
+    startBtn_ = new Sprite(startBtnID_,
+        glm::vec2(winSize_.x/2, winSize_.y/2), glm::vec2( btnWidth, btnHeight),
+        glm::vec2(winSize_.x, winSize_.y)
+    );
+
+    exitBtn_ = new Sprite(exitBtnID_,
+        glm::vec2(winSize_.x / 2, winSize_.y / 2 - btnHeight*2), glm::vec2(btnWidth, btnHeight),
+        glm::vec2(winSize_.x, winSize_.y)
+    );
 }
 
 TitleScreen::~TitleScreen(){
+
+    // Delete Button Vertex Data
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    delete startBtn_;
-    delete exitBtn_;
-    glDeleteBuffers(1, &menuButtonVBOID_);
-    glDeleteVertexArrays(1, &menuButtonVAOID_);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glDeleteBuffers(1, &menuButtonIndices_);
+    glDeleteBuffers(1, &menuButtonBufferID_);
+    glDeleteVertexArrays(1, &menuButtonVertexID_);
+
+    // Delete Button Textures
     glDeleteTextures(1, &startBtnID_);
     glDeleteTextures(1, &exitBtnID_);
+
+    // Delete the Sprites
+    delete startBtn_;
+    delete exitBtn_;
 }
 
 /*
@@ -44,7 +62,7 @@ void TitleScreen::mouseEvent(int button, int action){
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
         double xpos, ypos;
         glfwGetCursorPos(glfwGetCurrentContext(), &xpos, &ypos);
-        ypos = height_ - ypos;
+        ypos = winSize_.y - ypos;
 
         std::stringstream ss;
         std::string line;
@@ -66,10 +84,22 @@ void TitleScreen::mouseEvent(int button, int action){
 }
 
 void TitleScreen::render(){
-    glBindVertexArray(menuButtonVAOID_);
+    // Select the Menu Button Vertex Object Array
+    glBindVertexArray(menuButtonVertexID_);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, menuButtonIndices_);
+
+    // Render our Buttons
     startBtn_->render();
     exitBtn_->render();
+
+    // Deselect
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(0);
+    glBindVertexArray(0);
 }
 
 void TitleScreen::update(){}

@@ -18,17 +18,21 @@ private:
     // Screen Variables
     Screen *currentScreen;
 
+    // Setup functions
     void setupGL(int width, int height, const char* title);
     void setupDevIL();
 public: 
+    // Constructor / Deconstructor Functions
     GameWindow(int width, int height, const char* winTitle);
     ~GameWindow();
 
-    void mouseEvent(int button, int action);
+    // Getter Functions
     int getWidth();
     int getHeight();
     GLFWwindow* getWindow();
 
+    // Game Window Functions that we expect to use in main
+    void mouseEvent(int button, int action);
     void render();
     void update();
 };

@@ -4,14 +4,21 @@
 
 class TitleScreen : public Screen {
 private:
-    GLuint menuButtonVAOID_;
-    GLuint menuButtonVBOID_;
+
+    // Menu Button Data
+    GLuint menuButtonVertexID_;
+    GLuint menuButtonBufferID_;
+    GLuint menuButtonIndices_;
+
+    // Menu Button Textures
     GLuint startBtnID_;
     GLuint exitBtnID_;
 
+    // Screen Variables
     Sprite *startBtn_;
     Sprite *exitBtn_;
 
+    // Logic Functions
     bool checkButtonCollision(int xpos, int ypos, Sprite* btn);
 public:
     TitleScreen(int width, int height);

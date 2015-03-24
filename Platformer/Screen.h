@@ -5,8 +5,7 @@
 
 class Screen{
 protected:
-    int width_;
-    int height_;
+    glm::vec2 winSize_;
     bool switchScreen_;
     int screenIndex_;
 public:
