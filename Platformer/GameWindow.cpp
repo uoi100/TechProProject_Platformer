@@ -1,6 +1,7 @@
 #include "GameWindow.h"
 #include <algorithm>
 #include <string>
+#include "GLSLFunctions.h"
 
 // Sets up OpenGL and Glew which allows for the graphics operations to work.
 /*
@@ -46,16 +47,38 @@ void GameWindow::setupGL(int width, int height, const char* title){
 }
 
 /*
+ *@Description: Sets up Development Image Libary (DevIL)
+ * This library is responsible for reading the byte data of images
+   for OpenGL to render
+ */
+void GameWindow::setupDevIL(){
+    ilInit();
+    iluInit();
+    ilutInit();
+    ilOriginFunc(IL_ORIGIN_UPPER_LEFT);
+    ilEnable(IL_ORIGIN_SET);
+    ilutRenderer(ILUT_OPENGL);
+}
+
+/*
  *@Description: Constructor
     - Sets up openGL and Glew
+    - Sets up our shaders for rendering
     - Sets up the TitleScreen that the user will load into first.
  *@width - the width of the window context that will be drawn on
  *@height - the height of the window context that will be drawn on
  *@winTitle - the title of the window context that will be drawn on
  */
 GameWindow::GameWindow(int width, int height, const char* winTitle):
-width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
+width_{ width }, height_{ height }{
+    //setup OpenGL and Glew
     setupGL(width_, height_, winTitle);
+
+    //setup our shaders
+    programID_ = 0;
+    vertexShaderID_ = 0;
+    fragmentShaderID_ = 0;
+    setupShaders(&programID_, &vertexShaderID_, &fragmentShaderID_);
 
     currentScreen = new TitleScreen(width_, height_);
 }
@@ -87,17 +110,25 @@ int GameWindow::getWidth(){
     return width_;
 }
 
+/*
+ *@Description: Returns the height of the window context
+ *@Returns int - the height of the window context
+ */
 int GameWindow::getHeight(){
     return height_;
 }
 
+/*
+ *@Description: Returns the window context
+ *@Returns GLFWwindow* - pointer to the window context
+ */
 GLFWwindow* GameWindow::getWindow(){
     return window_;
 }
 
-
 /*
- * Description: Main drawing operations for objects will be here.
+ *@Description: The main function that calls the render function
+ of the current screen to display onto the window context
  */
 void GameWindow::render(){
     glClear(GL_COLOR_BUFFER_BIT);
@@ -108,7 +139,11 @@ void GameWindow::render(){
     glfwPollEvents();
 }
 
-// This is where the update functions of objects go
+/*
+ *@Description: The update function that calls the update function
+ of the current screen to update variables that may be required before
+ rendering onto the window context
+ */
 void GameWindow::update(){
 
     currentScreen->update();

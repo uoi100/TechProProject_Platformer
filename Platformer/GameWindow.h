@@ -5,27 +5,21 @@
 class GameWindow
 {
 private:
+    // Window Context Variables
     int width_;
     int height_;
     GLFWwindow* window_;
-    GLuint vertexArrayObjectID_;
-    GLuint smallVertexArrayObjectID_;
-    GLuint vertexBufferID_;
-    GLuint smallVertexBufferID_;
-    GLuint textureBufferID_;
-    GLuint projectileBufferID_;
-    GLuint enemyBufferID_;
 
-    PlayerSprite* player_;
-    std::vector<Sprite*> *projectileArray_;
-    std::vector<Sprite*> *enemyArray_;
+    // Shader Variables
+    GLuint programID_;
+    GLuint vertexShaderID_;
+    GLuint fragmentShaderID_;
+
+    // Screen Variables
     Screen *currentScreen;
 
-    void addEnemy();
-    bool checkCollision(Sprite* a, Sprite* b);
-    void checkForCollisions();
-    void checkOutsideScreen();
     void setupGL(int width, int height, const char* title);
+    void setupDevIL();
 public: 
     GameWindow(int width, int height, const char* winTitle);
     ~GameWindow();

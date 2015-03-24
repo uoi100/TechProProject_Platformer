@@ -46,8 +46,6 @@ private:
     // Functions
 
     int loadShader(std::string filename, int type);
-    float coTangent(float angle);
-    float degreesToRadians(float degrees);
 
     // Setup Functions
     void setupShaders();

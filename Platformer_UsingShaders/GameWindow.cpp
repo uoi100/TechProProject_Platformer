@@ -50,8 +50,8 @@ GLuint loadAndBufferImage(const char* fileName, int textureUnit, int width, int 
     glBindTexture(GL_TEXTURE_2D, textureBufferID);
 
     //Enable Texture Transparency
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    //glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
     // Set the pixel store parameters
     glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
@@ -115,15 +115,6 @@ int GameWindow::loadShader(std::string filename, int type){
     return 0;
 }
 
-float GameWindow::coTangent(float angle){
-    return (float)(1.0f / glm::tan(angle));
-}
-
-float GameWindow::degreesToRadians(float degrees){
-    return degrees * (float)(PI / 180.0);
-}
-
-
 void GameWindow::setupShaders(){
     int errorCheckValue = glGetError();
     // Load the vertex shader
@@ -138,7 +129,7 @@ void GameWindow::setupShaders(){
 
     // Position information will be attribute 0
     glBindAttribLocation(pID_, 0, "in_Position");
-    // Texture information will be attribute 2
+    // Texture information will be attribute 1
     glBindAttribLocation(pID_, 1, "in_TextureCoord");
 
     glLinkProgram(pID_);
@@ -193,7 +184,7 @@ void GameWindow::setupQuad(){
     glBindBuffer(GL_ARRAY_BUFFER, bufferID_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices_), quadVertices_, GL_STREAM_DRAW);
     //Put the Vertex Buffer Object in the attribute list at index 0
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData),
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData),
         (GLvoid *)offsetof(VertexData, positions));
     //glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexData),
     //    (GLvoid *)offsetof(VertexData, color));

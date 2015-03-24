@@ -1,4 +1,8 @@
 #include "Prefix.h"
+#include <iostream>
 
-void createVertexBuffer(GLuint *objectID, GLuint *bufferID, int width, int height);
-GLuint loadAndBufferImage(const char* fileName);
+// Create Vertex Array Object
+void createVertex(GLuint *vertexID, GLuint *bufferID, GLuint *indicesID, int width, int height);
+
+// Load and Buffer Images for rendering
+GLuint loadAndBufferImage(const char* fileName, int textureUnit);
