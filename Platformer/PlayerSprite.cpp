@@ -29,6 +29,7 @@ PlayerSprite::PlayerSprite(GLfloat textureID, glm::vec2 position, glm::vec2 size
 }
 
 void PlayerSprite::render(){
+    Sprite::render();
     /*
     glBindTexture(GL_TEXTURE_2D, textureID_);
 

@@ -7,7 +7,7 @@ void GameScreen::addEnemy(){
     int height = winSize_.y;
     GLfloat positionY = rand() % height;
     glm::vec2 enemySize(32, 32);
-    Sprite* enemy = new Sprite(enemyBufferID_,
+    Sprite* enemy = new Sprite(projectileTextureID_,
         makeVector2D(winSize_.x + 80, positionY),
         enemySize, winSize_ );
     enemy->setVelocity(makeVector2D(-5, 0));
@@ -141,27 +141,39 @@ void GameScreen::playerPhysics(){
         // We want to see how much of the player's left-side collides with someBlock's right-side
         int deltaX = abs((someBlock_->getPosition().x + someBlock_->getWidth() / 2) - (player_->getPosition().x - player_->getWidth() / 2));
         player_->setPosition(makeVector2D(player_->getPosition().x + deltaX, player_->getPosition().y));
+    } else if(
+        (playerPosition.x + playerWidth) >= (someBlockPositon.x - blockSize) &&
+        (playerPosition.x - playerWidth) < (someBlockPositon.x - blockSize) &&
+        (playerPosition.y - playerHeight) <= (someBlockPositon.y + blockSize) &&
+        (playerPosition.y + playerHeight) >= (someBlockPositon.y - blockSize)
+        ){
+        int deltaX = abs((someBlock_->getPosition().x - someBlock_->getWidth() / 2) - (player_->getPosition().x + player_->getWidth() / 2));
+        player_->setPosition(makeVector2D(player_->getPosition().x - deltaX, player_->getPosition().y));
     }
 }
 
 GameScreen::GameScreen(int width, int height) : Screen(width, height){
-    /*
-    createVertexBuffer(&vertexArrayObjectID_, &vertexBufferID_, 64, 128);
-    createVertexBuffer(&smallVertexArrayObjectID_, &smallVertexBufferID_, 32, 32);
+    glm::vec2 playerSize(64, 128);
+    glm::vec2 projectileSize(32, 32);
 
-    textureBufferID_ = loadAndBufferImage("./Image/Player.png");
-    projectileBufferID_ = loadAndBufferImage("./Image/Projectile.png");
-    enemyBufferID_ = loadAndBufferImage("./Image/Enemy.png");
+    // Create Player Vertex
+    createVertex(&playerVertexID_, &playerBufferID_, &playerIndices_, playerSize.x, playerSize.y);
+
+    // Create Projectile Vertex
+    createVertex(&projectileVertexID_, &projectileBufferID_, &projectileIndices_, projectileSize.x, projectileSize.y);
+
+    playerTextureID_ = loadAndBufferImage("./Image/Player.png", GL_TEXTURE0);
+    projectileTextureID_ = loadAndBufferImage("./Image/Projectile.png", GL_TEXTURE0);
 
     projectileArray_ = new std::vector < Sprite* >;
     projectileArray_->reserve(20);
     enemyArray_ = new std::vector < Sprite* >;
     enemyArray_->reserve(20);
 
-    player_ = new PlayerSprite(textureBufferID_, makeVector2D(500, 500), 64, 128);
-    someBlock_ = new Sprite(textureBufferID_, makeVector2D(width_ / 2, 0), 32, 32);
-    player_->setBoundingBox(makeBoundingBox(height_, 0, 0, width_));
-    */
+    player_ = new PlayerSprite(playerTextureID_, makeVector2D(500, 500), playerSize, winSize_);
+
+    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(winSize_.x / 2, 0), projectileSize, winSize_);
+    player_->setBoundingBox(makeBoundingBox(winSize_.y, 0, 0, winSize_.x));
 }
 
 GameScreen::~GameScreen(){
@@ -176,10 +188,12 @@ GameScreen::~GameScreen(){
     delete projectileArray_;
     delete enemyArray_;
     delete player_;
+    /*
     glDeleteBuffers(1, &vertexBufferID_);
     glDeleteTextures(1, &textureBufferID_);
     glDeleteTextures(1, &projectileBufferID_);
     glDeleteTextures(1, &enemyBufferID_);
+    */
 }
 
 /*
@@ -191,7 +205,7 @@ void GameScreen::mouseEvent(int button, int action){
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
         glm::vec2 projectileSize(32, 32);
-        Sprite* projectile = new Sprite(projectileBufferID_, player_->getPosition(), projectileSize, winSize_);
+        Sprite* projectile = new Sprite(projectileTextureID_, player_->getPosition(), projectileSize, winSize_);
         projectile->setVelocity(makeVector2D(10, 0));
         projectile->setRotationVelocity(36);
         projectileArray_->push_back(projectile);
@@ -199,11 +213,24 @@ void GameScreen::mouseEvent(int button, int action){
 }
 
 void GameScreen::render(){
-    glBindVertexArray(vertexArrayObjectID_);
+    glBindVertexArray(playerVertexID_);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, playerIndices_);
 
     player_->render();
 
-    glBindVertexArray(smallVertexArrayObjectID_);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(0);
+    glBindVertexArray(0);
+
+    glBindVertexArray(projectileVertexID_);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, projectileIndices_);
 
     someBlock_->render();
     for (auto& it : *projectileArray_)
@@ -211,6 +238,12 @@ void GameScreen::render(){
 
     for (auto& it : *enemyArray_)
         it->render();
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(0);
+    glBindVertexArray(0);
 }
 
 void GameScreen::update(){

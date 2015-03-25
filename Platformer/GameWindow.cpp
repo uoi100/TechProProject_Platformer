@@ -156,6 +156,7 @@ void GameWindow::mouseEvent(int button, int action){
 void GameWindow::render(){
     // Clear buffer to preset colors
     glClear(GL_COLOR_BUFFER_BIT);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Use the shader program we created in the constructor
     glUseProgram(programID_);

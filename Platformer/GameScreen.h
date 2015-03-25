@@ -4,13 +4,21 @@
 
 class GameScreen : public Screen {
 private:
-    GLuint vertexArrayObjectID_;
-    GLuint smallVertexArrayObjectID_;
-    GLuint vertexBufferID_;
-    GLuint smallVertexBufferID_;
-    GLuint textureBufferID_;
+    // Player Shader Variables
+    GLuint playerVertexID_;
+    GLuint playerBufferID_;
+    GLuint playerIndices_;
+
+    // Player Texture Variables
+    GLuint playerTextureID_;
+
+    // Projectile Shader Variables
+    GLuint projectileVertexID_;
     GLuint projectileBufferID_;
-    GLuint enemyBufferID_;
+    GLuint projectileIndices_;
+
+    // Projectile Texture Variables
+    GLuint projectileTextureID_;
 
     PlayerSprite* player_;
     Sprite* someBlock_;
