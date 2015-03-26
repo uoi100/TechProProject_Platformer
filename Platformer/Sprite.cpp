@@ -69,6 +69,9 @@ Sprite::Sprite(GLfloat textureID, glm::vec2 position, glm::vec2 size, glm::vec2 
     height_ = size.y;
     velocity_ = glm::vec2(0.0f, 0.0f);
     rotation_ = 0;
+    rotationVelocity_ = 1;
+    facingRight_ = false;
+    movementSpeed_ = 0;
 }
 
 // Getters and Setters
@@ -82,8 +85,8 @@ glm::vec2 Sprite::getPosition(){
     return glm::vec2(position_.x, position_.y);
 }
 
-void Sprite::setRotation(GLfloat rotation){
-    rotation_ = rotation;
+void Sprite::setRotation(int angle){
+    rotation_ = (float)angle / (float)100;
 }
 
 GLfloat Sprite::getRotation(){
@@ -106,6 +109,14 @@ glm::vec2 Sprite::getVelocity(){
     return velocity_;
 }
 
+void Sprite::setSpeed(int speed){
+    movementSpeed_ = speed;
+}
+
+int Sprite::getSpeed(){
+    return movementSpeed_;
+}
+
 int Sprite::getWidth(){
     return width_;
 }
@@ -121,9 +132,13 @@ void Sprite::render(){
     // Bind the texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID_);
+
+    // Perform Matrix Calculations
     matrixTransformation();
 
+    // Apply Alpha-Blending so that our images have transparent background
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     // Draw the vertices
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
 }
@@ -133,5 +148,6 @@ void Sprite::update(){
     position_.x += velocity_.x;
     position_.y += velocity_.y;
 
-    rotation_ += rotationVelocity_;
+    model = glm::rotate(model, rotation_ * rotationVelocity_, glm::vec3(0, 0, 1.0f));
+
 }

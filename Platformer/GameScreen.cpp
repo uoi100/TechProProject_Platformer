@@ -11,7 +11,7 @@ void GameScreen::addEnemy(){
         makeVector2D(winSize_.x + 80, positionY),
         enemySize, winSize_ );
     enemy->setVelocity(makeVector2D(-5, 0));
-    enemy->setRotationVelocity(12);
+    enemy->setRotation(12);
     enemyArray_->push_back(enemy);
 }
 
@@ -171,9 +171,9 @@ GameScreen::GameScreen(int width, int height) : Screen(width, height){
     enemyArray_->reserve(20);
 
     player_ = new PlayerSprite(playerTextureID_, makeVector2D(500, 500), playerSize, winSize_);
+    player_->setSpeed(10);
 
     someBlock_ = new Sprite(projectileTextureID_, makeVector2D(winSize_.x / 2, 0), projectileSize, winSize_);
-    player_->setBoundingBox(makeBoundingBox(winSize_.y, 0, 0, winSize_.x));
 }
 
 GameScreen::~GameScreen(){
@@ -207,25 +207,28 @@ void GameScreen::mouseEvent(int button, int action){
         glm::vec2 projectileSize(32, 32);
         Sprite* projectile = new Sprite(projectileTextureID_, player_->getPosition(), projectileSize, winSize_);
         projectile->setVelocity(makeVector2D(10, 0));
-        projectile->setRotationVelocity(36);
+        projectile->setRotation(36);
         projectileArray_->push_back(projectile);
     }
 }
 
 void GameScreen::render(){
+
+    // Background Render
+
+    // Game Render
+
     glBindVertexArray(playerVertexID_);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, playerIndices_);
 
+    // Render Player
+
     player_->render();
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(0);
-    glBindVertexArray(0);
+    // Render Projectiles and Enemies (cause they share the same vertex currently)
 
     glBindVertexArray(projectileVertexID_);
     glEnableVertexAttribArray(0);
@@ -238,6 +241,8 @@ void GameScreen::render(){
 
     for (auto& it : *enemyArray_)
         it->render();
+
+    // Overlay Render
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 

@@ -4,7 +4,7 @@
 
 class Sprite{
 private:
-    // Sprite Data
+    // Sprite Variables
     glm::vec2 velocity_;         // Movement of the sprite
 
     // Matrix Transformation Function
@@ -29,11 +29,14 @@ protected:
     GLfloat textureID_;         // texture id of the sprite
 
     // Sprite Variables
+    float const FLIP_HORIZONTAL_ = 180.0f;
     glm::vec3 position_;        // position of the sprite
     int width_;                 // Width of the Sprite
     int height_;                // Height of the Sprite
+    int movementSpeed_;
     GLfloat rotation_;          // Rotation of the Sprite
     GLfloat rotationVelocity_;  // Velocity of the Rotation of the Sprite
+    bool facingRight_;
 public:
     // Constructor Function
     Sprite(GLfloat textureID, glm::vec2 position, glm::vec2 size, glm::vec2 windowSize);
@@ -42,7 +45,7 @@ public:
     void setPosition( glm::vec2 newPosition);
     glm::vec2 getPosition();
 
-    void setRotation(GLfloat rotation);
+    void setRotation(int angle);
     GLfloat getRotation();
 
     void setRotationVelocity(GLfloat velocity);
@@ -50,6 +53,9 @@ public:
 
     void setVelocity(glm::vec2 newVector);
     glm::vec2 getVelocity();
+
+    void setSpeed(int speed);
+    int getSpeed();
 
     int getWidth();
     int getHeight();

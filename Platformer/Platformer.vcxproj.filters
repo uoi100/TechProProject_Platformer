@@ -28,6 +28,12 @@
     <Filter Include="Header Files\Screen">
       <UniqueIdentifier>{9e0a7623-43e8-4f3b-b718-34deee01f147}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Vector2D">
+      <UniqueIdentifier>{75445d3e-0813-4215-b76b-af8556129c25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GLSL Functions">
+      <UniqueIdentifier>{11724866-5d61-4582-bb92-dee4ef1d8782}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -57,17 +63,14 @@
     <ClCompile Include="TitleScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GLSLFunctions.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="Vector2D.cpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Vector2D</Filter>
+    </ClCompile>
+    <ClCompile Include="GLSLFunctions.cpp">
+      <Filter>Header Files\GLSL Functions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PlayerSprite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BoundingBox.h">
       <Filter>Header Files\BoundingBox</Filter>
     </ClInclude>
@@ -92,14 +95,17 @@
     <ClInclude Include="Screen.h">
       <Filter>Header Files\Screen</Filter>
     </ClInclude>
-    <ClInclude Include="GLSLFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameWindow.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Vector2D.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Vector2D</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSLFunctions.h">
+      <Filter>Header Files\GLSL Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerSprite.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
