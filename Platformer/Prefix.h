@@ -18,4 +18,5 @@
 #include "VertexData.h"
 #include "CustomOpenGLWrapper.h"
 #include "Vector2D.h"
+#include "SpriteCollision.h"
 #endif

@@ -72,6 +72,10 @@ Sprite::Sprite(GLfloat textureID, glm::vec2 position, glm::vec2 size, glm::vec2 
     rotationVelocity_ = 1;
     facingRight_ = false;
     movementSpeed_ = 0;
+    jumping_ = false;
+    falling_ = false;
+    jumpCounter_ = 0;
+    jumpStrength_ = 0;
 }
 
 // Getters and Setters
@@ -107,6 +111,42 @@ void Sprite::setVelocity(glm::vec2 newVector){
 
 glm::vec2 Sprite::getVelocity(){
     return velocity_;
+}
+
+void Sprite::setJumping(bool jumping){
+    jumping_ = jumping;
+}
+
+bool Sprite::getJumping(){
+    return jumping_;
+}
+
+void Sprite::setJumpStrength(int jumpStrength){
+    jumpStrength_ = jumpStrength;
+}
+
+bool Sprite::getJumpStrength(){
+    return jumpStrength_;
+}
+
+void Sprite::setFalling(bool falling){
+    if (falling)
+        fallHeight_ = makeVector2D(position_.x, position_.y);
+    else{
+        setVelocity(makeVector2D(getVelocity().x, 0));
+        fallHeight_ = glm::vec2(0, 0);
+        setJumping(false);
+    }
+
+    falling_ = falling;
+}
+
+bool Sprite::getFalling(){
+    return falling_;
+}
+
+glm::vec2 Sprite::getFallHeight(){
+    return fallHeight_;
 }
 
 void Sprite::setSpeed(int speed){

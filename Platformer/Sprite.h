@@ -6,6 +6,7 @@ class Sprite{
 private:
     // Sprite Variables
     glm::vec2 velocity_;         // Movement of the sprite
+    glm::vec2 fallHeight_;
 
     // Matrix Transformation Function
     void matrixTransformation();
@@ -33,10 +34,14 @@ protected:
     glm::vec3 position_;        // position of the sprite
     int width_;                 // Width of the Sprite
     int height_;                // Height of the Sprite
-    int movementSpeed_;
+    int movementSpeed_;         // Speed of the Sprite when it moves
+    int jumpStrength_;          // How high the sprite can jump
+    int jumpCounter_;           // Counter that counts how high the Sprite should jump
     GLfloat rotation_;          // Rotation of the Sprite
     GLfloat rotationVelocity_;  // Velocity of the Rotation of the Sprite
     bool facingRight_;
+    bool jumping_;
+    bool falling_;
 public:
     // Constructor Function
     Sprite(GLfloat textureID, glm::vec2 position, glm::vec2 size, glm::vec2 windowSize);
@@ -53,6 +58,17 @@ public:
 
     void setVelocity(glm::vec2 newVector);
     glm::vec2 getVelocity();
+
+    void setJumping(bool jumping);
+    bool getJumping();
+
+    void setJumpStrength(int jumpStrength);
+    bool getJumpStrength();
+
+    void setFalling(bool falling);
+    bool getFalling();
+
+    glm::vec2 getFallHeight();
 
     void setSpeed(int speed);
     int getSpeed();

@@ -30,6 +30,7 @@ private:
     void checkForCollisions();
     void checkOutsideScreen();
     void playerPhysics();
+    bool checkBottomFloor(Sprite* a);
 public:
     GameScreen(int width, int height);
     ~GameScreen();

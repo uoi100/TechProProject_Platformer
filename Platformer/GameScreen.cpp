@@ -114,43 +114,39 @@ void GameScreen::checkForCollisions(){
  * This logic also applies on other sprites as well.
  */
 void GameScreen::playerPhysics(){
-    glm::vec2 playerPosition = player_->getPosition();
-    int playerWidth = player_->getWidth() / 2;
-    int playerHeight = player_->getHeight() / 2;
-    glm::vec2 someBlockPositon = someBlock_->getPosition();
-    // We don't care about the Block's width or height because it is the same
-    int blockSize = someBlock_->getWidth() / 2;
-
-
-    // This checks if the player's left-side collides with someBlock's right-side
-    /*
-     * This condition checks the following:
-     * - If the player's left side collides with the block's right side
-     * - If the player's right side's position is still greater than the block's right side position
-     * (This is important because the player's left and right side position can be smaller than the block's right side.
-     * Which can trigger a logic error because the function thinks the player is colliding with the block).
-     * - If the player's bottom side is colliding with the block's top side
-     * - If the player's top side is colliding with the block's bottom side
-     */
-    if (
-        (playerPosition.x - playerWidth) <= (someBlockPositon.x + blockSize) &&
-        (playerPosition.x + playerWidth) > (someBlockPositon.x + blockSize) &&
-        (playerPosition.y - playerHeight) <= (someBlockPositon.y + blockSize) &&
-        (playerPosition.y + playerHeight) >= (someBlockPositon.y - blockSize)
-        ){
-        // We want to see how much of the player's left-side collides with someBlock's right-side
-        int deltaX = abs((someBlock_->getPosition().x + someBlock_->getWidth() / 2) - (player_->getPosition().x - player_->getWidth() / 2));
-        player_->setPosition(makeVector2D(player_->getPosition().x + deltaX, player_->getPosition().y));
-    } else if(
-        (playerPosition.x + playerWidth) >= (someBlockPositon.x - blockSize) &&
-        (playerPosition.x - playerWidth) < (someBlockPositon.x - blockSize) &&
-        (playerPosition.y - playerHeight) <= (someBlockPositon.y + blockSize) &&
-        (playerPosition.y + playerHeight) >= (someBlockPositon.y - blockSize)
-        ){
-        int deltaX = abs((someBlock_->getPosition().x - someBlock_->getWidth() / 2) - (player_->getPosition().x + player_->getWidth() / 2));
-        player_->setPosition(makeVector2D(player_->getPosition().x - deltaX, player_->getPosition().y));
+    if (checkCollision(player_, someBlock_)){
+        bool rightSide = false;
+        int offsetY = 0;
+        int offsetX = 0;
+        if ((player_->getFallHeight().y > (someBlock_->getPosition().y + someBlock_->getHeight()/2)) && player_->getFalling() ){
+            if (collideBottom(player_, someBlock_, &offsetY)){
+                player_->setPosition(glm::vec2(player_->getPosition().x, player_->getPosition().y + offsetY));
+                player_->setFalling(false);
+            }
+        }
+        else if (collideSides(player_, someBlock_, &rightSide, &offsetX)){
+                if (rightSide)
+                    player_->setPosition(glm::vec2(player_->getPosition().x - offsetX, player_->getPosition().y));
+                else
+                    player_->setPosition(glm::vec2(player_->getPosition().x + offsetX, player_->getPosition().y));
+        }
+    } else if (!player_->getJumping() && !player_->getFalling() && !checkBottomFloor(player_)){
+        player_->setFalling(true);
+    } else if (player_->getFalling() && checkBottomFloor(player_)){
+        player_->setPosition(glm::vec2(player_->getPosition().x, player_->getHeight() / 2));
+        player_->setFalling(false);
     }
 }
+
+bool GameScreen::checkBottomFloor(Sprite* a){
+    int yPos = a->getPosition().y - a->getHeight() / 2;
+
+    if (yPos < 0)
+        return true;
+
+    return false;
+}
+
 
 GameScreen::GameScreen(int width, int height) : Screen(width, height){
     glm::vec2 playerSize(64, 128);
@@ -162,18 +158,26 @@ GameScreen::GameScreen(int width, int height) : Screen(width, height){
     // Create Projectile Vertex
     createVertex(&projectileVertexID_, &projectileBufferID_, &projectileIndices_, projectileSize.x, projectileSize.y);
 
+    // Create Player Texture
     playerTextureID_ = loadAndBufferImage("./Image/Player.png", GL_TEXTURE0);
+
+    // Create Projectile Texture
     projectileTextureID_ = loadAndBufferImage("./Image/Projectile.png", GL_TEXTURE0);
 
+    // Initialize Arraylist of Projectiles and Enemies to keep track of the entities on the screen
     projectileArray_ = new std::vector < Sprite* >;
     projectileArray_->reserve(20);
     enemyArray_ = new std::vector < Sprite* >;
     enemyArray_->reserve(20);
 
+    // Create a new player
     player_ = new PlayerSprite(playerTextureID_, makeVector2D(500, 500), playerSize, winSize_);
-    player_->setSpeed(10);
+    player_->setSpeed(5);
+    player_->setJumpStrength(10);
+    player_->setFalling(true);
 
-    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(winSize_.x / 2, 0), projectileSize, winSize_);
+    // Collision Testing Sprite
+    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(winSize_.x / 2, projectileSize.y/2), projectileSize, winSize_);
 }
 
 GameScreen::~GameScreen(){
@@ -256,7 +260,7 @@ void GameScreen::update(){
     playerPhysics();
 
     // Checks if the players or projectiles collides with the enemy.
-    checkForCollisions();
+    //checkForCollisions();
 
     // Erase Enemies and Projectiles that are out of screen
     checkOutsideScreen();
