@@ -181,8 +181,8 @@ GameScreen::GameScreen(int width, int height) : Screen(width, height){
 
     // Create a new player
     player_ = new PlayerSprite(playerTextureID_, makeVector2D(500, 500), playerSize, winSize_);
-    player_->setSpeed(10);
-    player_->setJumpStrength(10);
+    player_->setSpeed(7);
+    player_->setJumpStrength(15);
 
     // Create Platforms
     platformArray_ = new std::vector < Sprite* > ;
