@@ -85,7 +85,7 @@ void Sprite::setPosition(glm::vec2 newPosition){
     position_.y = newPosition.y;
 }
 
-glm::vec2 Sprite::getPosition(){
+glm::vec2 Sprite::getPosition() const{
     return glm::vec2(position_.x, position_.y);
 }
 
@@ -93,7 +93,7 @@ void Sprite::setRotation(int angle){
     rotation_ = (float)angle / (float)100;
 }
 
-GLfloat Sprite::getRotation(){
+GLfloat Sprite::getRotation() const{
     return rotation_;
 }
 
@@ -101,7 +101,7 @@ void Sprite::setRotationVelocity(GLfloat velocity){
     rotationVelocity_ = velocity;
 }
 
-GLfloat Sprite::getRotationVelocity(){
+GLfloat Sprite::getRotationVelocity() const{
     return rotationVelocity_;
 }
 
@@ -109,7 +109,7 @@ void Sprite::setVelocity(glm::vec2 newVector){
     velocity_ = newVector;
 }
 
-glm::vec2 Sprite::getVelocity(){
+glm::vec2 Sprite::getVelocity() const{
     return velocity_;
 }
 
@@ -117,7 +117,7 @@ void Sprite::setJumping(bool jumping){
     jumping_ = jumping;
 }
 
-bool Sprite::getJumping(){
+bool Sprite::getJumping() const{
     return jumping_;
 }
 
@@ -125,7 +125,7 @@ void Sprite::setJumpStrength(int jumpStrength){
     jumpStrength_ = jumpStrength;
 }
 
-bool Sprite::getJumpStrength(){
+bool Sprite::getJumpStrength() const{
     return jumpStrength_;
 }
 
@@ -141,11 +141,11 @@ void Sprite::setFalling(bool falling){
     falling_ = falling;
 }
 
-bool Sprite::getFalling(){
+bool Sprite::getFalling() const{
     return falling_;
 }
 
-glm::vec2 Sprite::getFallHeight(){
+glm::vec2 Sprite::getFallHeight() const{
     return fallHeight_;
 }
 
@@ -153,16 +153,20 @@ void Sprite::setSpeed(int speed){
     movementSpeed_ = speed;
 }
 
-int Sprite::getSpeed(){
+int Sprite::getSpeed() const{
     return movementSpeed_;
 }
 
-int Sprite::getWidth(){
+int Sprite::getWidth() const{
     return width_;
 }
 
-int Sprite::getHeight(){
+int Sprite::getHeight() const{
     return height_;
+}
+
+glm::vec2 Sprite::getSize(){
+    return glm::vec2(width_, height_);
 }
 
 // Render and Update Functions

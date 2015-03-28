@@ -1,7 +1,7 @@
 #include "Prefix.h"
 #ifndef SPRITE_H
 #define SPRITE_H
-
+#include "SpriteCollision.h"
 class Sprite{
 private:
     // Sprite Variables
@@ -48,33 +48,35 @@ public:
 
     // Getters and Setters
     void setPosition( glm::vec2 newPosition);
-    glm::vec2 getPosition();
+    glm::vec2 getPosition() const;
 
     void setRotation(int angle);
-    GLfloat getRotation();
+    GLfloat getRotation() const;
 
     void setRotationVelocity(GLfloat velocity);
-    GLfloat getRotationVelocity();
+    GLfloat getRotationVelocity() const;
 
     void setVelocity(glm::vec2 newVector);
-    glm::vec2 getVelocity();
+    glm::vec2 getVelocity() const;
 
     void setJumping(bool jumping);
-    bool getJumping();
+    bool getJumping() const;
 
     void setJumpStrength(int jumpStrength);
-    bool getJumpStrength();
+    bool getJumpStrength() const;
 
     void setFalling(bool falling);
-    bool getFalling();
+    bool getFalling() const;
 
-    glm::vec2 getFallHeight();
+    glm::vec2 getFallHeight() const;
 
     void setSpeed(int speed);
-    int getSpeed();
+    int getSpeed() const;
 
-    int getWidth();
-    int getHeight();
+    int getWidth() const;
+    int getHeight() const;
+
+    glm::vec2 getSize();
 
     // Render and Update Functions
     virtual void render();

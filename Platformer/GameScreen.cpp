@@ -114,27 +114,36 @@ void GameScreen::checkForCollisions(){
  * This logic also applies on other sprites as well.
  */
 void GameScreen::playerPhysics(){
-    if (checkCollision(player_, someBlock_)){
-        bool rightSide = false;
-        int offsetY = 0;
-        int offsetX = 0;
-        if ((player_->getFallHeight().y > (someBlock_->getPosition().y + someBlock_->getHeight()/2)) && player_->getFalling() ){
-            if (collideBottom(player_, someBlock_, &offsetY)){
-                player_->setPosition(glm::vec2(player_->getPosition().x, player_->getPosition().y + offsetY));
-                player_->setFalling(false);
+    bool yCollision = false;
+
+    for (Sprite* platform : *platformArray_){
+        if (checkCollision(player_, platform)){
+            bool rightSide = false;
+            int offsetY = 0;
+            int offsetX = 0;
+            if ((player_->getFallHeight().y > (platform->getPosition().y + platform->getHeight() / 2)) && player_->getFalling()){
+                if (yCollision = collideBottom(player_, platform, &offsetY)){
+                    player_->setPosition(glm::vec2(player_->getPosition().x, player_->getPosition().y + offsetY));
+                    player_->setFalling(false);
+                }
             }
-        }
-        else if (collideSides(player_, someBlock_, &rightSide, &offsetX)){
+            else if (collideSides(player_, platform, &rightSide, &offsetX)){
                 if (rightSide)
                     player_->setPosition(glm::vec2(player_->getPosition().x - offsetX, player_->getPosition().y));
                 else
                     player_->setPosition(glm::vec2(player_->getPosition().x + offsetX, player_->getPosition().y));
+            }
         }
-    } else if (!player_->getJumping() && !player_->getFalling() && !checkBottomFloor(player_)){
-        player_->setFalling(true);
-    } else if (player_->getFalling() && checkBottomFloor(player_)){
-        player_->setPosition(glm::vec2(player_->getPosition().x, player_->getHeight() / 2));
-        player_->setFalling(false);
+
+        if (!yCollision){
+            if (!player_->getJumping() && !player_->getFalling() && !checkBottomFloor(player_)){
+                player_->setFalling(true);
+            }
+            else if (player_->getFalling() && checkBottomFloor(player_)){
+                player_->setPosition(glm::vec2(player_->getPosition().x, player_->getHeight() / 2));
+                player_->setFalling(false);
+            }
+        }
     }
 }
 
@@ -172,12 +181,53 @@ GameScreen::GameScreen(int width, int height) : Screen(width, height){
 
     // Create a new player
     player_ = new PlayerSprite(playerTextureID_, makeVector2D(500, 500), playerSize, winSize_);
-    player_->setSpeed(5);
+    player_->setSpeed(10);
     player_->setJumpStrength(10);
-    player_->setFalling(true);
+
+    // Create Platforms
+    platformArray_ = new std::vector < Sprite* > ;
+    for (int i = 10; i > 5; i--){
+        someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (i * projectileSize.x), projectileSize.y / 2), projectileSize, winSize_);
+        platformArray_->push_back(someBlock_);
+    }
+
+    // Hard-coded Staircase
+
+    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (17 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 1), projectileSize, winSize_);
+    platformArray_->push_back(someBlock_);
+    
+    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (17 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 2), projectileSize, winSize_);
+    platformArray_->push_back(someBlock_);
+
+    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (17 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 3), projectileSize, winSize_);
+    platformArray_->push_back(someBlock_);
+
+    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (17 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 4), projectileSize, winSize_);
+    platformArray_->push_back(someBlock_);
+
+    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (16 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 1), projectileSize, winSize_);
+    platformArray_->push_back(someBlock_);
+
+    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (16 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 2), projectileSize, winSize_);
+    platformArray_->push_back(someBlock_);
+
+    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (16 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 3), projectileSize, winSize_);
+    platformArray_->push_back(someBlock_);
+
+    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (15 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 1), projectileSize, winSize_);
+    platformArray_->push_back(someBlock_);
+
+    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (15 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 2), projectileSize, winSize_);
+    platformArray_->push_back(someBlock_);
+
+    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (20 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 2), projectileSize, winSize_);
+    platformArray_->push_back(someBlock_);
+
+    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (21 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 2), projectileSize, winSize_);
+    platformArray_->push_back(someBlock_);
 
     // Collision Testing Sprite
-    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(winSize_.x / 2, projectileSize.y/2), projectileSize, winSize_);
+    
 }
 
 GameScreen::~GameScreen(){
@@ -239,7 +289,9 @@ void GameScreen::render(){
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, projectileIndices_);
 
-    someBlock_->render();
+    for (auto& it : *platformArray_)
+        it->render();
+
     for (auto& it : *projectileArray_)
         it->render();
 
@@ -256,8 +308,26 @@ void GameScreen::render(){
 }
 
 void GameScreen::update(){
+    // Get objects around the player
+    glm::vec2 playerPos = player_->getPosition();
+    glm::vec2 playerSize = player_->getSize();
+    std::vector<Sprite *> nearbyObjects;
+
+    // Find nearby platforms that the player may be able to reach
+    for (auto& it : *platformArray_)
+    {
+        glm::vec2 platformPos = it->getPosition();
+        int xOffset = abs(platformPos.x - playerPos.x);
+        int yOffset = abs(platformPos.y - playerPos.y);
+        if ((xOffset + yOffset) <= (playerSize.x + playerSize.y)){
+            nearbyObjects.push_back(it);
+        }
+    }
+
+    player_->setObjects(nearbyObjects);
+
     player_->update();
-    playerPhysics();
+    //playerPhysics();
 
     // Checks if the players or projectiles collides with the enemy.
     //checkForCollisions();

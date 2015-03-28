@@ -1,18 +1,134 @@
 #include "PlayerSprite.h"
+#include <algorithm>
+
+enum Direction { LEFT, RIGHT, UP, DOWN };
+
+struct findClosest{
+    // Comparison Variables
+    int xOffset_;
+    int yOffset_;
+    int min_;
+    Direction direction_;
+
+    // Source Variables
+    int leftSide_;
+    int rightSide_;
+    int bottomSide_;
+    int topSide_;
+    // We store the closest match here
+    Sprite* closest;
+
+    // location of the side of the player and direction
+    findClosest(Sprite* source, Direction direction){
+        // We make this the largest possible value so we can find the smallest value for comparison
+        min_ = INT16_MAX;
+        xOffset_ = INT16_MAX;
+        yOffset_ = INT16_MAX;
+        direction_ = direction;
+
+        // Get the coordinates of the source's sides
+        glm::vec2 pos = source->getPosition();
+        int width = source->getWidth() / 2;
+        int height = source->getHeight() / 2;
+
+        leftSide_ = pos.x - width;
+        rightSide_ = pos.x + width;
+        topSide_ = pos.y + height;
+        bottomSide_ = pos.y - height;
+    }
+
+    // Determine the sprite with the lowest offset depending on which side
+    void operator()(Sprite* a){
+        int width = a->getWidth() / 2;
+        int height = a->getHeight() / 2;
+
+        glm::vec2 pos = a->getPosition();
+
+        int leftSide = pos.x - width;
+        int rightSide = pos.x + width;
+        int bottomSide = pos.y - height;
+        int topSide = pos.y + height;
+
+        int xOffset = abs(leftSide_ - rightSide) + abs(rightSide_ - leftSide);
+        int yOffset = abs(topSide_ - bottomSide) + abs(bottomSide_ - topSide);
+
+        int offset = xOffset + yOffset;
+
+        if (direction_ == LEFT || direction_ == RIGHT){
+            if (bottomSide_ > topSide)
+                return;
+        }
+
+        if (offset < min_){
+            min_ = offset;
+            closest = a;
+        }
+    }
+
+};
 
 void PlayerSprite::checkInput(){
     int x = 0;
     int y = getVelocity().y;
+    bool nearbyObjects = objects_.size() > 0;
+
+    int playerRight = position_.x + width_ / 2;
+    int playerLeft = position_.x - width_ / 2;
+    int playerBottom = position_.y - height_ / 2;
+    int playerTop = position_.y + height_ / 2;
 
     // If the right arrow key is pressed then move the character right
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_RIGHT) == GLFW_PRESS){
         if (!facingRight_){
             facingRight_ = true;
-            
-            model = glm::rotate(model,  (float) glm::radians(FLIP_HORIZONTAL_), glm::vec3(0.0f, 1.0f, 0.0f));
+
+            model = glm::rotate(model, (float)glm::radians(FLIP_HORIZONTAL_), glm::vec3(0.0f, 1.0f, 0.0f));
         }
 
-            x += movementSpeed_;
+        x += movementSpeed_;
+
+        if (nearbyObjects){
+            // check if there is an object on the player's line of path
+            for (Sprite *object : objects_){
+                bool collide = false;
+
+                for (int i = 0; i < height_; i++){
+                    if (pointInsideSprite(object, playerRight + movementSpeed_, playerBottom + i))
+                    {
+                        x = 0;
+                        collide = true;
+                        break;
+                    }
+                }
+
+                if (collide){
+                    break;
+                }
+            }
+
+            if (!jumping_){
+                bool objectBelow = false;
+                // check if there is an object on the player's line of path
+                for (Sprite *object : objects_){
+
+                    for (int i = 0; i < width_; i++){
+                        if (pointInsideSprite(object, playerLeft + i, playerBottom - movementSpeed_))
+                        {
+                            objectBelow = true;
+                            break;
+                        }
+                    }
+
+                    if (objectBelow){
+                        break;
+                    }
+                }
+
+                if (position_.y - height_ / 2 > 0){
+                    setFalling(true);
+                }
+            }
+        }
     }
 
     // If the left array key is pressed then move the character left
@@ -23,15 +139,72 @@ void PlayerSprite::checkInput(){
             model = glm::rotate(model, -(float)glm::radians(FLIP_HORIZONTAL_), glm::vec3(0.0f, 1.0f, 0.0f));
         }
 
-            x -= movementSpeed_;
+        x -= movementSpeed_;
+
+        if (nearbyObjects){
+            // check if there is an object on the player's line of path
+            for (Sprite *object : objects_){
+                bool collide = false;
+
+                for (int i = 0; i < height_; i++){
+                    if (pointInsideSprite(object, playerLeft - movementSpeed_, playerBottom + i))
+                    {
+                        x = 0;
+                        collide = true;
+                        break;
+                    }
+                }
+
+                if (collide){
+                    break;
+                }
+            }
+
+            if (!jumping_){
+                bool objectBelow = false;
+                // check if there is an object on the player's line of path
+                for (Sprite *object : objects_){
+
+                    for (int i = 0; i < width_; i++){
+                        if (pointInsideSprite(object, playerLeft + i, playerBottom - movementSpeed_))
+                        {
+                            y = 0;
+                            setFalling(false);
+                            objectBelow = true;
+                            break;
+                        }
+                    }
+
+                    if (objectBelow){
+                        break;
+                    }
+                }
+
+                if (!objectBelow){
+                    if (position_.y - height_ / 2 > 0){
+                        setFalling(true);
+                    }
+                }
+            }
+        }
     }
 
+    // Player Jumps up
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_UP) == GLFW_PRESS && !jumping_ && !falling_){
         y = movementSpeed_;
         jumping_ = true;
         jumpCounter_ = jumpStrength_;
     }
 
+    // Gravity Logic
+    // Check if the player is on the ground
+    if (!nearbyObjects){
+        if (position_.y - height_ / 2 > 0){
+            setFalling(true);
+        }
+    }
+
+    // Check if the player is still jumping
     if (jumping_){
         y = movementSpeed_;
 
@@ -44,13 +217,70 @@ void PlayerSprite::checkInput(){
     }
     else if (falling_){
         y = -movementSpeed_;
+
+        if (nearbyObjects){
+
+            if (nearbyObjects){
+                // check if there is an object on the player's line of path
+                for (Sprite *object : objects_){
+                    bool collide = false;
+
+                    for (int i = 0; i < width_; i++){
+                        if (pointInsideSprite(object, playerLeft + i, playerBottom - movementSpeed_))
+                        {
+                            y = 0;
+                            setFalling(false);
+                            collide = true;
+                            break;
+                        }
+                    }
+
+                    if (collide){
+                        break;
+                    }
+                }
+            }
+            /*
+            findClosest fC = findClosest(this, DOWN);
+
+            fC = for_each(objects_.begin(), objects_.end(), fC);
+
+            Sprite* nearestObject = fC.closest;
+
+
+            
+            int objectTop = nearestObject->getPosition().y + nearestObject->getHeight() / 2;
+            int objectLeft = nearestObject->getPosition().x - nearestObject->getWidth() / 2;
+            int objectRight = nearestObject->getPosition().x + nearestObject->getWidth() / 2;
+           
+
+            // Make sure that the player's x is between the object's width
+            if (between(this, nearestObject)){
+                if (objectTop >= playerBottom && objectTop >= playerBottom - movementSpeed_){
+                    y = 0;
+                    position_.y = objectTop + height_ / 2;
+                    setFalling(false);
+                }
+            }
+            */
+        }
+
+        if (position_.y - height_/2 < 0){
+            y = 0;
+            setFalling(false);
+        }
     }
 
+    objects_.clear();
     setVelocity(glm::vec2(x, y));
 }
 
 PlayerSprite::PlayerSprite(GLfloat textureID, glm::vec2 position, glm::vec2 size, glm::vec2 windowSize)
 :Sprite(textureID, position, size, windowSize){
+}
+
+void PlayerSprite::setObjects(std::vector<Sprite*> objects){
+    objects_ = objects;
 }
 
 void PlayerSprite::render(){

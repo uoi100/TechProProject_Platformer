@@ -20,7 +20,12 @@ private:
     // Projectile Texture Variables
     GLuint projectileTextureID_;
 
+    // Player Variables
     PlayerSprite* player_;
+
+    // Platformer Variables
+    std::vector<Sprite*> *platformArray_;
+
     Sprite* someBlock_;
     std::vector<Sprite*> *projectileArray_;
     std::vector<Sprite*> *enemyArray_;
