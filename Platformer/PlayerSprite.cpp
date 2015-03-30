@@ -92,40 +92,18 @@ void PlayerSprite::checkInput(){
             for (Sprite *object : objects_){
                 bool collide = false;
 
-                for (int i = 0; i < height_; i++){
+                for (int i = 0; i <= height_; i++){
                     if (pointInsideSprite(object, playerRight + movementSpeed_, playerBottom + i))
                     {
                         x = 0;
                         collide = true;
+                        position_.x = object->getPosition().x - object->getWidth() / 2 - width_ / 2;
                         break;
                     }
                 }
 
                 if (collide){
                     break;
-                }
-            }
-
-            if (!jumping_){
-                bool objectBelow = false;
-                // check if there is an object on the player's line of path
-                for (Sprite *object : objects_){
-
-                    for (int i = 0; i < width_; i++){
-                        if (pointInsideSprite(object, playerLeft + i, playerBottom - movementSpeed_))
-                        {
-                            objectBelow = true;
-                            break;
-                        }
-                    }
-
-                    if (objectBelow){
-                        break;
-                    }
-                }
-
-                if (position_.y - height_ / 2 > 0){
-                    setFalling(true);
                 }
             }
         }
@@ -146,44 +124,18 @@ void PlayerSprite::checkInput(){
             for (Sprite *object : objects_){
                 bool collide = false;
 
-                for (int i = 0; i < height_; i++){
+                for (int i = 0; i <= height_; i++){
                     if (pointInsideSprite(object, playerLeft - movementSpeed_, playerBottom + i))
                     {
                         x = 0;
                         collide = true;
+                        position_.x = object->getPosition().x + object->getWidth() / 2 + width_ / 2;
                         break;
                     }
                 }
 
                 if (collide){
                     break;
-                }
-            }
-
-            if (!jumping_){
-                bool objectBelow = false;
-                // check if there is an object on the player's line of path
-                for (Sprite *object : objects_){
-
-                    for (int i = 0; i < width_; i++){
-                        if (pointInsideSprite(object, playerLeft + i, playerBottom - movementSpeed_))
-                        {
-                            y = 0;
-                            setFalling(false);
-                            objectBelow = true;
-                            break;
-                        }
-                    }
-
-                    if (objectBelow){
-                        break;
-                    }
-                }
-
-                if (!objectBelow){
-                    if (position_.y - height_ / 2 > 0){
-                        setFalling(true);
-                    }
                 }
             }
         }
@@ -203,6 +155,26 @@ void PlayerSprite::checkInput(){
             setFalling(true);
         }
     }
+    else {
+        bool collide = false;
+        for (Sprite *object : objects_){
+            for (int i = 0; i < width_ - 5; i++){
+                if (pointInsideSprite(object, playerLeft + i, playerBottom - movementSpeed_))
+                {
+                    collide = true;
+                    position_.y = object->getPosition().y + object->getHeight() / 2 + height_ / 2;
+                    break;
+                }
+            }
+
+            if (collide){
+                break;
+            }
+        }
+        if (!collide){
+            setFalling(true);
+        }
+    }
 
     // Check if the player is still jumping
     if (jumping_){
@@ -218,51 +190,28 @@ void PlayerSprite::checkInput(){
     else if (falling_){
         y = -movementSpeed_;
 
+
         if (nearbyObjects){
+            // check if there is an object on the player's line of path
+            for (Sprite *object : objects_){
+                bool collide = false;
 
-            if (nearbyObjects){
-                // check if there is an object on the player's line of path
-                for (Sprite *object : objects_){
-                    bool collide = false;
-
-                    for (int i = 0; i < width_; i++){
-                        if (pointInsideSprite(object, playerLeft + i, playerBottom - movementSpeed_))
-                        {
-                            y = 0;
-                            setFalling(false);
-                            collide = true;
-                            break;
-                        }
-                    }
-
-                    if (collide){
+                for (int i = 0; i < width_ - 5; i++){
+                    if (pointInsideSprite(object, playerLeft + i, playerBottom - movementSpeed_))
+                    {
+                        y = 0;
+                        setFalling(false);
+                        collide = true;
                         break;
                     }
                 }
-            }
-            /*
-            findClosest fC = findClosest(this, DOWN);
 
-            fC = for_each(objects_.begin(), objects_.end(), fC);
-
-            Sprite* nearestObject = fC.closest;
-
-
-            
-            int objectTop = nearestObject->getPosition().y + nearestObject->getHeight() / 2;
-            int objectLeft = nearestObject->getPosition().x - nearestObject->getWidth() / 2;
-            int objectRight = nearestObject->getPosition().x + nearestObject->getWidth() / 2;
-           
-
-            // Make sure that the player's x is between the object's width
-            if (between(this, nearestObject)){
-                if (objectTop >= playerBottom && objectTop >= playerBottom - movementSpeed_){
-                    y = 0;
-                    position_.y = objectTop + height_ / 2;
-                    setFalling(false);
+                if (collide){
+                    break;
                 }
             }
-            */
+            
+
         }
 
         if (position_.y - height_/2 < 0){
@@ -292,5 +241,10 @@ void PlayerSprite::update(){
     Sprite::update();
 
     checkInput();
+
+    if (falling_)
+        OutputDebugString("Falling\n");
+    else
+        OutputDebugString("Not Falling\n");
 }
 

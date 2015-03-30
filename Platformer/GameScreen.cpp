@@ -176,7 +176,7 @@ GameScreen::GameScreen(int width, int height) : Screen(width, height){
     // Create Background Setup
     createVertex(&backgroundVertexID_, &backgroundBufferID_, &backgroundIndices_, width * 2, height);
     backgroundTextureID_ = loadAndBufferImage("./Image/background.png", GL_TEXTURE0);
-    
+
     background_ = new Sprite(backgroundTextureID_, glm::vec2(0, height/2), glm::vec2(width * 2, height), winSize_);
 
     // Initialize Arraylist of Projectiles and Enemies to keep track of the entities on the screen
@@ -184,8 +184,6 @@ GameScreen::GameScreen(int width, int height) : Screen(width, height){
     projectileArray_->reserve(20);
     enemyArray_ = new std::vector < Sprite* >;
     enemyArray_->reserve(20);
-
-    // Hard-Coded stuff
 
     // Create Platforms
     platformArray_ = new std::vector < Sprite* > ;
