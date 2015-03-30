@@ -161,17 +161,23 @@ GameScreen::GameScreen(int width, int height) : Screen(width, height){
     glm::vec2 playerSize(64, 128);
     glm::vec2 projectileSize(32, 32);
 
-    // Create Player Vertex
+    // Create Player Setup
     createVertex(&playerVertexID_, &playerBufferID_, &playerIndices_, playerSize.x, playerSize.y);
-
-    // Create Projectile Vertex
-    createVertex(&projectileVertexID_, &projectileBufferID_, &projectileIndices_, projectileSize.x, projectileSize.y);
-
-    // Create Player Texture
     playerTextureID_ = loadAndBufferImage("./Image/Player.png", GL_TEXTURE0);
 
-    // Create Projectile Texture
+    player_ = new PlayerSprite(playerTextureID_, makeVector2D(500, 500), playerSize, winSize_);
+    player_->setSpeed(10);
+    player_->setJumpStrength(10);
+
+    // Create Projectile Setup
+    createVertex(&projectileVertexID_, &projectileBufferID_, &projectileIndices_, projectileSize.x, projectileSize.y);
     projectileTextureID_ = loadAndBufferImage("./Image/Projectile.png", GL_TEXTURE0);
+
+    // Create Background Setup
+    createVertex(&backgroundVertexID_, &backgroundBufferID_, &backgroundIndices_, width * 2, height);
+    backgroundTextureID_ = loadAndBufferImage("./Image/background.png", GL_TEXTURE0);
+    
+    background_ = new Sprite(backgroundTextureID_, glm::vec2(0, height/2), glm::vec2(width * 2, height), winSize_);
 
     // Initialize Arraylist of Projectiles and Enemies to keep track of the entities on the screen
     projectileArray_ = new std::vector < Sprite* >;
@@ -179,10 +185,7 @@ GameScreen::GameScreen(int width, int height) : Screen(width, height){
     enemyArray_ = new std::vector < Sprite* >;
     enemyArray_->reserve(20);
 
-    // Create a new player
-    player_ = new PlayerSprite(playerTextureID_, makeVector2D(500, 500), playerSize, winSize_);
-    player_->setSpeed(10);
-    player_->setJumpStrength(10);
+    // Hard-Coded stuff
 
     // Create Platforms
     platformArray_ = new std::vector < Sprite* > ;
@@ -269,6 +272,13 @@ void GameScreen::mouseEvent(int button, int action){
 void GameScreen::render(){
 
     // Background Render
+    glBindVertexArray(backgroundVertexID_);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, backgroundIndices_);
+
+    background_->render();
 
     // Game Render
 

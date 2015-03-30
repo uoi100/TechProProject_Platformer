@@ -4,24 +4,27 @@
 
 class GameScreen : public Screen {
 private:
-    // Player Shader Variables
+    // Player Variables
     GLuint playerVertexID_;
     GLuint playerBufferID_;
     GLuint playerIndices_;
-
-    // Player Texture Variables
     GLuint playerTextureID_;
 
-    // Projectile Shader Variables
+    PlayerSprite* player_;
+
+    // Projectile Variables
     GLuint projectileVertexID_;
     GLuint projectileBufferID_;
     GLuint projectileIndices_;
-
-    // Projectile Texture Variables
     GLuint projectileTextureID_;
 
-    // Player Variables
-    PlayerSprite* player_;
+    // Background Variables
+    GLuint backgroundVertexID_;
+    GLuint backgroundBufferID_;
+    GLuint backgroundIndices_;
+    GLuint backgroundTextureID_;
+
+    Sprite* background_;
 
     // Platformer Variables
     std::vector<Sprite*> *platformArray_;
