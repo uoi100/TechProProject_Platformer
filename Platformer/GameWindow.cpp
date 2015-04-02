@@ -1,329 +1,210 @@
 #include "GameWindow.h"
 #include <algorithm>
 #include <string>
-
-GLuint GameWindow::createVertexBuffer(int width, int height){
-    GLuint vertexBufferID;
-    // Create a name buffer object for vertexBufferID
-    glGenBuffers(1, &vertexBufferID);
-    // Sets an array buffer pointed at vertexBufferID
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-    // Create a vertex with 4 points for our entities
-    VertexData square[] = {
-            { { -width / 2, -height / 2, 0.0f }, { 0.0f, 0.0f } },     // Bottom-Left
-            { { width / 2, -height / 2, 0.0f }, { 1.0f, 0.0f } },   // Bottom-Right
-            { { width / 2, height / 2, 0.0f }, { 1.0f, 1.0f } }, // Top-Right
-            { { -width / 2, height / 2, 0.0f }, { 0.0f, 1.0f } }    // Top-Left
-    };
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(square), square, GL_STATIC_DRAW);
-
-    return vertexBufferID;
-}
-
-// We want to render load and buffer images for drawing
-GLuint GameWindow::loadAndBufferImage(const char* fileName){
-
-    GLuint textureBufferID = SOIL_load_OGL_texture(
-        fileName,
-        SOIL_LOAD_AUTO,
-        SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_INVERT_Y | SOIL_FLAG_MULTIPLY_ALPHA);
-
-    if (textureBufferID == 0)
-        return NULL;
-
-    glBindTexture(GL_TEXTURE_2D, textureBufferID);
-
-    // Sets Texture Environment, in this case we want to set the environment
-    // to make the image transparent
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ONE_MINUS_SRC_ALPHA);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    return textureBufferID;
-}
+#include "GLSLFunctions.h"
 
 /*
- * Description: Adds enemies into the game
+ *@Author Calvin Truong and Wesley Dale
+ *@Version 2.0
+ *@Description: The main window context that will be rendered on
+    The game window contains different screens such as the title screen
+    and game screen and determines which screen will be drawn
+    on the window context.
  */
-void GameWindow::addEnemy(){
-    GLfloat positionY = rand() % height_;
-    Sprite* enemy = new Sprite(enemyBufferID_, makeVector2D(width_ + 80, positionY), 80, 120);
-    enemy->setVelocity(makeVector2D(-5, 0));
-    enemy->setRotationVelocity(12);
-    enemyArray_->push_back(enemy);
-}
-
-/*
- * Description: Checks if two sprites are colliding with eachother or not
- * @Sprite* a - The first Sprite
- * @Sprite* b - The second Sprite
- * First Case: if a's right side is not colliding with b's left side
- * Second Case: if a's left side is not colliding with b's right side
- * Third Case: if a's top side is not colliding with b's bottom side
- * Fourth Case: if a's bottom side is not colliding with b's top side
- * if any of these cases match, return false.
- */
-bool GameWindow::checkCollision(Sprite* a, Sprite* b){
-    return !(
-        a->getPosition().x + a->getWidth() / 2 <= b->getPosition().x - b->getWidth() / 2 ||
-        a->getPosition().x - a->getWidth() / 2 >= b->getPosition().x + b->getWidth() / 2 ||
-        a->getPosition().y + a->getHeight() / 2 <= b->getPosition().y - b->getHeight() / 2 ||
-        a->getPosition().y - a->getHeight() / 2 >= b->getPosition().y + b->getHeight() / 2
-        );
-}
-
-/*
- * Description: Check if the following sprites are outside the screen
- * - Projectiles
- * - Enemies
- * If they are, delete them to save memory space.
- */
-void GameWindow::checkOutsideScreen(){
-    std::vector<std::vector<Sprite*>::iterator> deleteProjectilesArray;
-    std::vector<std::vector<Sprite*>::iterator> deleteEnemyArray;
-
-    // Check if any projectiles are out of the screen, if they are prepare them for deletion
-    for (std::vector<Sprite*>::iterator projectileIterator = projectileArray_->begin();
-        projectileIterator != projectileArray_->end(); projectileIterator++)
-        if ((*projectileIterator)->getPosition().x > width_ + (*projectileIterator)->getWidth())
-            deleteProjectilesArray.push_back(projectileIterator);
-
-    // Delete projectiles that are out of the screen
-    for (auto& it : deleteProjectilesArray)
-        projectileArray_->erase(it);
-
-    // Check if any enemies are out of the screen, if they are prepare them for deletion
-    for (std::vector<Sprite*>::iterator enemyIterator = enemyArray_->begin();
-        enemyIterator != enemyArray_->end(); enemyIterator++)
-        if ((*enemyIterator)->getPosition().x < 0 - (*enemyIterator)->getWidth())
-            deleteEnemyArray.push_back(enemyIterator);
-
-    // Delete enemies that are out of the screen
-    for (auto& it : deleteEnemyArray)
-        enemyArray_->erase(it);
-}
-
-void GameWindow::checkForCollisions(){
-    std::vector<std::vector<Sprite*>::iterator> deleteEnemies;
-    std::vector<std::vector<Sprite*>::iterator> deleteProjectiles;
-
-    // Check if there are any collisions when the enemy touches the player or projectiles
-    for (std::vector<Sprite*>::iterator& it = enemyArray_->begin(); it != enemyArray_->end();
-        it++){
-        if (checkCollision(*it, player_))
-            deleteEnemies.push_back(it);
-
-        for (std::vector<Sprite*>::iterator& it2 = projectileArray_->begin(); it2 != projectileArray_->end();
-            it2++){
-            if (checkCollision((*it), (*it2))){
-                deleteEnemies.push_back(it);
-                deleteProjectiles.push_back(it2);
-            }
-        }
-    }
-
-    // Erase enemies that collided
-    for (auto& it : deleteEnemies)
-        enemyArray_->erase(it);
-
-    // Erase projectiles that collided
-    for (auto& it : deleteProjectiles)
-        projectileArray_->erase(it);
-}
 
 // Sets up OpenGL and Glew which allows for the graphics operations to work.
+/*
+ *@Description: Initialize openGL using glfw(openGL & win32 wrapper) which creates the window context for graphic functions to draw on,
+    as well as initialize glew (openGL extensible wrangler) which is responsible for extending the drawing capabilities of openGL
+ *
+ *@width - The width of the window that will be used to draw on
+ *@height - The height of the window that will be used to draw on
+ *@title - The window title that is displayed on the top of the window.
+ */
 void GameWindow::setupGL(int width, int height, const char* title){
+    // this function makes it so that the user does not accidentally drag the window
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    // create the window by the width and height, give it a title, the 4th parameter is set to NULL
+    // to let the function know that the context is not going to be full-screen.
     window_ = glfwCreateWindow(width, height, title, NULL, NULL);
 
+    // If the function had failed to create the window context then terminate the program.
     if (!window_)
     {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
 
+    // Store the window context as the current context
     glfwMakeContextCurrent(window_);
 
-    //Glew Init must be initialized after a Context is set.
+    // After the current context is set, initialize glew
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();
+
+    // if glew fails to initalize then terminate the program.
     if (err != GLEW_OK){
         fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+        glfwTerminate();
+        exit(EXIT_FAILURE);
     }
 
-    //Specifies the area that will be drawn
-    glViewport(0, 0, width_, height_);
-    // Clear background and fill with the color white
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-    // Enable usage of 2D Textures
-    glEnable(GL_TEXTURE_2D);
-    // Enable usage of Alpha Blending, for transparent images
+    //Enable Blending which is used to render textures
+    //and "blend" textures such as ones with transparency so that
+    //the textures render properly with the window context.
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    // Set the current matrix to the GL_PROJECTION matrix
-    // Which is the matrix that "Projects" how you see when things are drawn
-    glMatrixMode(GL_PROJECTION);
-    // replace the current matrix with the identity matrix
-    glLoadIdentity();
-    // Defines a 2D orthographic projection matrix
-    // basically the clipping plane which "clips out" things that would be
-    // drawn outside as we would not see it anyways.
-    gluOrtho2D(0, width_, 0, height_);
-    // Set the current matrix to the GL_MODELVIEW matrix
-    // Which is basically for our objects to be drawn and then translated onto our projection
-    glMatrixMode(GL_MODELVIEW);
-
-    /*
-    // Create a name buffer object for vertexBufferID
-    glGenBuffers(1, &vertexBufferID_);
-    // Sets an array buffer pointed at vertexBufferID
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID_);
-    // Create a vertex with 4 points for our entities
-    //VertexData *vertices = makeVertices(64, 128);
-    int texWidth = 64;
-    int texHeight = 128;
-
-    VertexData square[] = {
-    { { -texWidth / 2, -texHeight / 2, 0.0f }, { 0.0f, 0.0f } },     // Bottom-Left
-    { { texWidth / 2, -texHeight / 2, 0.0f }, { 1.0f, 0.0f } },   // Bottom-Right
-    { { texWidth / 2, texHeight / 2, 0.0f }, { 1.0f, 1.0f } }, // Top-Right
-    { { -texWidth / 2, texHeight / 2, 0.0f }, { 0.0f, 1.0f } }    // Top-Left
-    };
-
-    // Adds the data of vertices into the buffer for static drawing operations
-    glBufferData(GL_ARRAY_BUFFER, sizeof(square), square, GL_STATIC_DRAW);
-    */
-    vertexBufferID_ = createVertexBuffer(64, 128);
-
-    // Allows the client to use vertex arrays
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    // Lets the drawing know the size of the array, what data type it should expect,
-    // the size of the struct, and an offset of the struct and the member that will be read.
-    glVertexPointer(3, GL_FLOAT, sizeof(VertexData),
-        (GLvoid *)offsetof(VertexData, positionCoordinates));
-
-    // Lets the drawing know the texture coordinates of the array, this is used so it knows the corners of the image
-    
-    glTexCoordPointer(2, GL_FLOAT, sizeof(VertexData),
-        (GLvoid *)offsetof(VertexData, textureCoordinates));
 }
 
 /*
- * Description: Constructor
- * - Sets up openGL and Glew
- * - Sets up the Sprites (Entities) for the game.
+ *@Description: Sets up Development Image Libary (DevIL)
+ * This library is responsible for reading the byte data of images
+   for OpenGL to render
+ */
+void GameWindow::setupDevIL(){
+    ilInit();
+    iluInit();
+    ilutInit();
+    ilOriginFunc(IL_ORIGIN_UPPER_LEFT);
+    ilEnable(IL_ORIGIN_SET);
+    ilutRenderer(ILUT_OPENGL);
+}
+
+/*
+ *@Description: Constructor
+    - Sets up openGL and Glew
+    - Sets up our shaders for rendering
+    - Sets up the TitleScreen that the user will load into first.
+ *@width - the width of the window context that will be drawn on
+ *@height - the height of the window context that will be drawn on
+ *@winTitle - the title of the window context that will be drawn on
  */
 GameWindow::GameWindow(int width, int height, const char* winTitle):
-width_{ width }, height_{ height }, vertexBufferID_{ 0 }, textureBufferID_{ 0 }{
+width_{ width }, height_{ height }{
+    //setup OpenGL and Glew
     setupGL(width_, height_, winTitle);
 
-    textureBufferID_ = loadAndBufferImage("./Image/Player.png");
-    projectileBufferID_ = loadAndBufferImage("./Image/Projectile.png");
-    enemyBufferID_ = loadAndBufferImage("./Image/Enemy.png");
+    //setup our shaders
+    programID_ = 0;
+    vertexShaderID_ = 0;
+    fragmentShaderID_ = 0;
+    setupShaders(&programID_, &vertexShaderID_, &fragmentShaderID_);
 
-    projectileArray_ = new std::vector < Sprite* >;
-    projectileArray_->reserve(20);
-    enemyArray_ = new std::vector < Sprite* > ;
-    enemyArray_->reserve(20);
+    //setup our Development Image Library (DevIL)
+    setupDevIL();
 
-    player_ = new PlayerSprite(textureBufferID_, makeVector2D(500,500), 80, 120);
-    player_->setBoundingBox(makeBoundingBox(height_, 0, 0, width_));
-}
-
-GameWindow::~GameWindow(){
-    for (auto& it : *projectileArray_)
-        delete it;
-
-    for (auto& it : *enemyArray_)
-        delete it;
-    
-    delete projectileArray_;
-    delete enemyArray_;
-    delete player_;
-    glDeleteBuffers(1, &vertexBufferID_);
-    glDeleteTextures(1, &textureBufferID_);
-    glDeleteTextures(1, &projectileBufferID_);
-    glDeleteTextures(1, &enemyBufferID_);
+    currentScreen = new TitleScreen(width_, height_);
 }
 
 /*
- * Description: When the mouse is clicked, do the following:
- * Left Click - Shoot a projectile at the position of the player and store it
- * in an array to keep track of.
+ *@Description: Destructor
+    Responsible for cleaning up memory after we're done using them
  */
-void GameWindow::mouseEvent(int button, int action){
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-    {
-        Sprite* projectile = new Sprite(projectileBufferID_, player_->getPosition(), 80, 120);
-        projectile->setVelocity(makeVector2D(10, 0));
-        projectile->setRotationVelocity(36);
-        projectileArray_->push_back(projectile);
-    }
+GameWindow::~GameWindow(){
+
+    // Delete Shader Pointers
+    glUseProgram(0);
+    glDetachShader(programID_, vertexShaderID_);
+    glDetachShader(programID_, fragmentShaderID_);
+
+    glDeleteShader(vertexShaderID_);
+    glDeleteShader(fragmentShaderID_);
+    glDeleteProgram(programID_);
+
+    // Delete our Screen Pointer
+    delete currentScreen;
 }
 
+/*
+ *@Description: Returns the width of the window context
+ *@Returns int - the width of the window context.
+ */
 int GameWindow::getWidth(){
     return width_;
 }
 
+/*
+ *@Description: Returns the height of the window context
+ *@Returns int - the height of the window context
+ */
 int GameWindow::getHeight(){
     return height_;
 }
 
+/*
+ *@Description: Returns the window context
+ *@Returns GLFWwindow* - pointer to the window context
+ */
 GLFWwindow* GameWindow::getWindow(){
     return window_;
 }
 
+/*
+*@Description: When the mouse is clicked, do the following:
+-Left Click: Shoot a projectile at the position of the player and store it
+in an array to keep track of.
+*@button - The button that was used with the mouse
+*@action - The action that that button was doing
+*/
+void GameWindow::mouseEvent(int button, int action){
+    currentScreen->mouseEvent(button, action);
+}
 
 /*
- * Description: Main drawing operations for objects will be here.
+ *@Description: The main function that calls the render function
+ of the current screen to display onto the window context
  */
 void GameWindow::render(){
+    // Clear buffer to preset colors
     glClear(GL_COLOR_BUFFER_BIT);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    player_->render();
+    // Use the shader program we created in the constructor
+    glUseProgram(programID_);
 
-    for (auto& it : *projectileArray_)
-        it->render();
+    // Render our Screen
+    currentScreen->render();
 
-    for (auto& it : *enemyArray_)
-        it->render();
+    // Deselect our program
+    glUseProgram(0);
+
+    // Tell OpenGL that we are finished drawing and are ready to swap the buffers
 
     glfwSwapBuffers(window_);
     glfwPollEvents();
 }
 
-// This is where the update functions of objects go
+/*
+ *@Description: The update function that calls the update function
+ of the current screen to update variables that may be required before
+ rendering onto the window context
+ * The follow indices will call their respective screens:
+ * 0 -  The Title Screen
+ * 1 -  The Game Screen
+ * 2 -  The Gameover Screen
+ * 3 -  The Congratulations Screen
+ * -1 - Exit the Game
+ */
 void GameWindow::update(){
-    player_->update();
 
-    // Checks if the players or projectiles collides with the enemy.
-    checkForCollisions();
+    currentScreen->update();
 
-    // Erase Enemies and Projectiles that are out of screen
-    checkOutsideScreen();
-
-    // Since the update function runs 60 times per second
-    // We want to create a rock every second.
-    static int update = 0;
-    if (update >= 60){
-        addEnemy();
-        update = 0;
+    // Check if the current Screen wants to change to the next screen
+    // If it does then get the screen index (hardcoded) of the screen
+    // it wants to change to, in this case 1 = the game screen
+    if (currentScreen->switchScreen()){
+        if (currentScreen->screenIndex() == 0){
+            Screen *old = currentScreen;
+            currentScreen = new TitleScreen(width_, height_);
+            delete old;
+        }
+        else if (currentScreen->screenIndex() == 1){
+            Screen *old = currentScreen;
+            currentScreen = new GameScreen(width_, height_);
+            delete old;
+        }
+        else if (currentScreen->screenIndex() == -1){
+            glfwSetWindowShouldClose(window_, GL_TRUE);
+        }
     }
-    update++;
-
-    // Sets the rotation and updates the projectiles
-    for (auto& it : *projectileArray_)
-        it->update();
-
-    for (auto& it : *enemyArray_)
-        it->update();
 
 }

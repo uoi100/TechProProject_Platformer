@@ -1,38 +1,38 @@
-#define GLFW_INCLUDE_GLU
 #include "Prefix.h"
-#include "PlayerSprite.h"
+#include "GameScreen.h"
+#include "TitleScreen.h"
 
 class GameWindow
 {
 private:
+    // Window Context Variables
     int width_;
     int height_;
     GLFWwindow* window_;
-    GLuint vertexBufferID_;
-    GLuint textureBufferID_;
-    GLuint projectileBufferID_;
-    GLuint enemyBufferID_;
 
-    PlayerSprite* player_;
-    std::vector<Sprite*> *projectileArray_;
-    std::vector<Sprite*> *enemyArray_;
+    // Shader Variables
+    GLuint programID_;
+    GLuint vertexShaderID_;
+    GLuint fragmentShaderID_;
 
-    GLuint createVertexBuffer(int width, int height);
-    GLuint loadAndBufferImage(const char* fileName);
-    void addEnemy();
-    bool checkCollision(Sprite* a, Sprite* b);
-    void checkForCollisions();
-    void checkOutsideScreen();
+    // Screen Variables
+    Screen *currentScreen;
+
+    // Setup functions
     void setupGL(int width, int height, const char* title);
+    void setupDevIL();
 public: 
+    // Constructor / Deconstructor Functions
     GameWindow(int width, int height, const char* winTitle);
     ~GameWindow();
 
-    void mouseEvent(int button, int action);
+    // Getter Functions
     int getWidth();
     int getHeight();
     GLFWwindow* getWindow();
 
+    // Game Window Functions that we expect to use in main
+    void mouseEvent(int button, int action);
     void render();
     void update();
 };

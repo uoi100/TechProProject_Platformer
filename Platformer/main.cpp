@@ -23,7 +23,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    gameWindow = new GameWindow(800*16/9, 800, "PlatformerGame");
+    gameWindow = new GameWindow(800, 600, "PlatformerGame");
 
     glfwSetMouseButtonCallback(glfwGetCurrentContext(), mouseEvent);
 

@@ -13,65 +13,113 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\Image">
-      <UniqueIdentifier>{7066fa1d-d1b8-4d02-9f6f-990fe5ab8671}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Vector2D">
-      <UniqueIdentifier>{fc55b71d-5e39-41b3-b68a-750e4b5209c2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\BoundingBox">
       <UniqueIdentifier>{bf9d735e-233e-4870-869f-a0b714361467}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\VertexData">
       <UniqueIdentifier>{ed5b4308-b168-4081-aa51-8e00804be384}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Sprite">
+      <UniqueIdentifier>{e2fa03f1-665d-4ae8-be9e-ce48a52c00ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CustomOpenGLWrapper">
+      <UniqueIdentifier>{8db8ebcb-8acd-46b8-8599-1313109bbbcf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Screen">
+      <UniqueIdentifier>{9e0a7623-43e8-4f3b-b718-34deee01f147}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Vector2D">
+      <UniqueIdentifier>{75445d3e-0813-4215-b76b-af8556129c25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GLSL Functions">
+      <UniqueIdentifier>{11724866-5d61-4582-bb92-dee4ef1d8782}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameWindow.cpp">
-      <Filter>Header Files</Filter>
+    <ClCompile Include="BoundingBox.cpp">
+      <Filter>Header Files\BoundingBox</Filter>
     </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>Header Files</Filter>
+    <ClCompile Include="GameWindow.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PlayerSprite.cpp">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Header Files\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomOpenGLWrapper.cpp">
+      <Filter>Header Files\CustomOpenGLWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Screen.cpp">
+      <Filter>Header Files\Screen</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleScreen.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Vector2D.cpp">
       <Filter>Header Files\Vector2D</Filter>
     </ClCompile>
-    <ClCompile Include="BoundingBox.cpp">
-      <Filter>Header Files\BoundingBox</Filter>
+    <ClCompile Include="GLSLFunctions.cpp">
+      <Filter>Header Files\GLSL Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteCollision.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sprite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerSprite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector2D.h">
-      <Filter>Header Files\Vector2D</Filter>
-    </ClInclude>
-    <ClInclude Include="BoundingBox.h">
-      <Filter>Header Files\BoundingBox</Filter>
-    </ClInclude>
     <ClInclude Include="Prefix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VertexData.h">
       <Filter>Header Files\VertexData</Filter>
     </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Header Files\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomOpenGLWrapper.h">
+      <Filter>Header Files\CustomOpenGLWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScreen.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleScreen.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Screen.h">
+      <Filter>Header Files\Screen</Filter>
+    </ClInclude>
+    <ClInclude Include="GameWindow.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2D.h">
+      <Filter>Header Files\Vector2D</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSLFunctions.h">
+      <Filter>Header Files\GLSL Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerSprite.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteCollision.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingBox.h">
+      <Filter>Header Files\CustomOpenGLWrapper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Image\test.png">
-      <Filter>Source Files\Image</Filter>
-    </Image>
+    <None Include="fragment.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="vertex.glsl">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

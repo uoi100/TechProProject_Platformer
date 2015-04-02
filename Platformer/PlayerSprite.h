@@ -3,19 +3,24 @@
 
 class PlayerSprite : public Sprite{
 private:
-    BoundingBox boundingBox_;
-    bool falling_;
-    bool jumping_;
-    GLfloat maxJumpHeight;
-    GLfloat currentJumpHeight;
-    GLfloat facingRight_;
+    // Check for key inputs
+    void checkInput();
 
-    void getKeyInput();
+    // An arraylist of objects near the player
+    std::vector<Sprite *> objects_;
+
+    // Player Variables
+    bool alive_;
 public:
-    void setBoundingBox(BoundingBox boundingBox);
+    PlayerSprite(GLfloat textureID, glm::vec2 position, glm::vec2 size, glm::vec2 windowSize);
 
-    PlayerSprite(GLuint textureBufferID, Vector2D position, int width, int height);
+    // Get objects near the player
+    void setObjects(std::vector<Sprite *> objects);
 
-    void render();
+    // Check if the player is alive or not
+    bool isAlive();
+
+    // Window Functions
+    void render(int xOffset = 0, int yOffset = 0);
     void update();
 };
