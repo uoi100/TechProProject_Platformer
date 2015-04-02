@@ -18,6 +18,9 @@ private:
     GLuint projectileIndices_;
     GLuint projectileTextureID_;
 
+    // Cloud Variables
+    GLuint cloudTextureID_;
+
     // Background Variables
     GLuint backgroundVertexID_;
     GLuint backgroundBufferID_;
@@ -27,9 +30,12 @@ private:
     Sprite* background_;
 
     // Platformer Variables
-    std::vector<Sprite*> *platformArray_;
+    GLuint platformVertexID_;
+    GLuint platformBufferID_;
+    GLuint platformIndices_;
+    GLuint platformTextureID_;
 
-    Sprite* someBlock_;
+    std::vector<Sprite*> *platformArray_;
     std::vector<Sprite*> *projectileArray_;
     std::vector<Sprite*> *enemyArray_;
 
@@ -39,6 +45,8 @@ private:
     void checkOutsideScreen();
     void playerPhysics();
     bool checkBottomFloor(Sprite* a);
+    // Setup Platforms
+    void setupLevel();
 public:
     GameScreen(int width, int height);
     ~GameScreen();

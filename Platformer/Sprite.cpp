@@ -171,14 +171,19 @@ glm::vec2 Sprite::getSize(){
 
 // Render and Update Functions
 
-void Sprite::render(){
+void Sprite::render(int xOffset, int yOffset){
 
     // Bind the texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID_);
 
+    position_.x += xOffset;
+    position_.y += yOffset;
     // Perform Matrix Calculations
     matrixTransformation();
+
+    position_.x -= xOffset;
+    position_.y -= yOffset;
 
     // Apply Alpha-Blending so that our images have transparent background
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

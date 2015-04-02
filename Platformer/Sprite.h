@@ -79,7 +79,7 @@ public:
     glm::vec2 getSize();
 
     // Render and Update Functions
-    virtual void render();
+    virtual void render(int xOffset = 0, int yOffset = 0);
     virtual void update();
 };
 

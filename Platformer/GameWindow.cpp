@@ -177,6 +177,12 @@ void GameWindow::render(){
  *@Description: The update function that calls the update function
  of the current screen to update variables that may be required before
  rendering onto the window context
+ * The follow indices will call their respective screens:
+ * 0 -  The Title Screen
+ * 1 -  The Game Screen
+ * 2 -  The Gameover Screen
+ * 3 -  The Congratulations Screen
+ * -1 - Exit the Game
  */
 void GameWindow::update(){
 
@@ -186,7 +192,12 @@ void GameWindow::update(){
     // If it does then get the screen index (hardcoded) of the screen
     // it wants to change to, in this case 1 = the game screen
     if (currentScreen->switchScreen()){
-        if (currentScreen->screenIndex() == 1){
+        if (currentScreen->screenIndex() == 0){
+            Screen *old = currentScreen;
+            currentScreen = new TitleScreen(width_, height_);
+            delete old;
+        }
+        else if (currentScreen->screenIndex() == 1){
             Screen *old = currentScreen;
             currentScreen = new GameScreen(width_, height_);
             delete old;

@@ -5,13 +5,13 @@
 */
 void GameScreen::addEnemy(){
     int height = winSize_.y;
-    GLfloat positionY = rand() % height;
+    GLfloat positionY = height - (rand() % height/2);
     glm::vec2 enemySize(32, 32);
-    Sprite* enemy = new Sprite(projectileTextureID_,
-        makeVector2D(winSize_.x + 80, positionY),
+    Sprite* enemy = new Sprite(cloudTextureID_,
+        makeVector2D(winSize_.x*2 + 80, positionY),
         enemySize, winSize_ );
     enemy->setVelocity(makeVector2D(-5, 0));
-    enemy->setRotation(12);
+    //enemy->setRotation(12);
     enemyArray_->push_back(enemy);
 }
 
@@ -156,28 +156,90 @@ bool GameScreen::checkBottomFloor(Sprite* a){
     return false;
 }
 
+// Sets up the level that the player will load in
+void GameScreen::setupLevel(){
+    glm::vec2 platformSize(64, 64);
+    Sprite *platform;
+
+    // Note that these are hard-coded values for now
+    // Three platforms at (0,64), (64,64), (128,64)
+    platform = new Sprite(platformTextureID_, glm::vec2(platformSize.x / 2, platformSize.y / 2 + platformSize.y), platformSize, winSize_);
+    platformArray_->push_back(platform);
+
+    // First Set
+    platform = new Sprite(platformTextureID_, glm::vec2(platformSize.x / 2 + platformSize.x, platformSize.y / 2 + platformSize.y), platformSize, winSize_);
+    platformArray_->push_back(platform);
+
+    platform = new Sprite(platformTextureID_, glm::vec2(platformSize.x / 2 + platformSize.x * 2, platformSize.y / 2 + platformSize.y), platformSize, winSize_);
+    platformArray_->push_back(platform);
+
+    platform = new Sprite(platformTextureID_, glm::vec2(platformSize.x / 2 + platformSize.x * 3, platformSize.y / 2 + platformSize.y), platformSize, winSize_);
+    platformArray_->push_back(platform);
+
+    // Second Set
+
+    platform = new Sprite(platformTextureID_, glm::vec2(platformSize.x / 2 + platformSize.x * 5, platformSize.y / 2 + platformSize.y * 3), platformSize, winSize_);
+    platformArray_->push_back(platform);
+
+    platform = new Sprite(platformTextureID_, glm::vec2(platformSize.x / 2 + platformSize.x * 6, platformSize.y / 2 + platformSize.y * 3), platformSize, winSize_);
+    platformArray_->push_back(platform);
+
+    platform = new Sprite(platformTextureID_, glm::vec2(platformSize.x / 2 + platformSize.x * 7, platformSize.y / 2 + platformSize.y * 3), platformSize, winSize_);
+    platformArray_->push_back(platform);
+
+    // Third set
+
+    platform = new Sprite(platformTextureID_, glm::vec2(platformSize.x / 2 + platformSize.x * 13, platformSize.y / 2 + platformSize.y), platformSize, winSize_);
+    platformArray_->push_back(platform);
+
+    // Fourth Set
+    platform = new Sprite(platformTextureID_, glm::vec2(platformSize.x / 2 + platformSize.x * 15, platformSize.y / 2 + platformSize.y * 2), platformSize, winSize_);
+    platformArray_->push_back(platform);
+
+    platform = new Sprite(platformTextureID_, glm::vec2(platformSize.x / 2 + platformSize.x * 16, platformSize.y / 2 + platformSize.y * 3), platformSize, winSize_);
+    platformArray_->push_back(platform);
+
+    platform = new Sprite(platformTextureID_, glm::vec2(platformSize.x / 2 + platformSize.x * 17, platformSize.y / 2 + platformSize.y * 4), platformSize, winSize_);
+    platformArray_->push_back(platform);
+
+    platform = new Sprite(platformTextureID_, glm::vec2(platformSize.x / 2 + platformSize.x * 18, platformSize.y / 2 + platformSize.y * 4), platformSize, winSize_);
+    platformArray_->push_back(platform);
+}
+
 
 GameScreen::GameScreen(int width, int height) : Screen(width, height){
     glm::vec2 playerSize(64, 128);
     glm::vec2 projectileSize(32, 32);
+    glm::vec2 platformSize(64, 64);
 
-    // Create Player Setup
+    // Player Setup
     createVertex(&playerVertexID_, &playerBufferID_, &playerIndices_, playerSize.x, playerSize.y);
     playerTextureID_ = loadAndBufferImage("./Image/Player.png", GL_TEXTURE0);
 
-    player_ = new PlayerSprite(playerTextureID_, makeVector2D(500, 500), playerSize, winSize_);
+    player_ = new PlayerSprite(playerTextureID_, makeVector2D(playerSize.x/2, 500), playerSize, winSize_);
     player_->setSpeed(10);
-    player_->setJumpStrength(10);
+    player_->setJumpStrength(15);
+
+    // Background Setup
+    createVertex(&backgroundVertexID_, &backgroundBufferID_, &backgroundIndices_, width * 2, height);
+    backgroundTextureID_ = loadAndBufferImage("./Image/background.png", GL_TEXTURE0);
+
+    background_ = new Sprite(backgroundTextureID_, glm::vec2(width, height/2), glm::vec2(width * 2, height), winSize_);
+
+    // Platform Setup
+    createVertex(&platformVertexID_, &platformBufferID_, &platformIndices_, platformSize.x, platformSize.y);
+    platformTextureID_ = loadAndBufferImage("./Image/grass.png", GL_TEXTURE0);
+
+    platformArray_ = new std::vector < Sprite * > ;
+
+    setupLevel();
 
     // Create Projectile Setup
     createVertex(&projectileVertexID_, &projectileBufferID_, &projectileIndices_, projectileSize.x, projectileSize.y);
     projectileTextureID_ = loadAndBufferImage("./Image/Projectile.png", GL_TEXTURE0);
 
-    // Create Background Setup
-    createVertex(&backgroundVertexID_, &backgroundBufferID_, &backgroundIndices_, width * 2, height);
-    backgroundTextureID_ = loadAndBufferImage("./Image/background.png", GL_TEXTURE0);
-
-    background_ = new Sprite(backgroundTextureID_, glm::vec2(0, height/2), glm::vec2(width * 2, height), winSize_);
+    // Cloud Setup
+    cloudTextureID_ = loadAndBufferImage("./Image/cloud1.png", GL_TEXTURE0);
 
     // Initialize Arraylist of Projectiles and Enemies to keep track of the entities on the screen
     projectileArray_ = new std::vector < Sprite* >;
@@ -185,50 +247,6 @@ GameScreen::GameScreen(int width, int height) : Screen(width, height){
     enemyArray_ = new std::vector < Sprite* >;
     enemyArray_->reserve(20);
 
-    // Create Platforms
-    platformArray_ = new std::vector < Sprite* > ;
-    for (int i = 10; i > 5; i--){
-        someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (i * projectileSize.x), projectileSize.y / 2), projectileSize, winSize_);
-        platformArray_->push_back(someBlock_);
-    }
-
-    // Hard-coded Staircase
-
-    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (17 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 1), projectileSize, winSize_);
-    platformArray_->push_back(someBlock_);
-    
-    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (17 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 2), projectileSize, winSize_);
-    platformArray_->push_back(someBlock_);
-
-    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (17 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 3), projectileSize, winSize_);
-    platformArray_->push_back(someBlock_);
-
-    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (17 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 4), projectileSize, winSize_);
-    platformArray_->push_back(someBlock_);
-
-    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (16 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 1), projectileSize, winSize_);
-    platformArray_->push_back(someBlock_);
-
-    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (16 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 2), projectileSize, winSize_);
-    platformArray_->push_back(someBlock_);
-
-    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (16 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 3), projectileSize, winSize_);
-    platformArray_->push_back(someBlock_);
-
-    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (15 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 1), projectileSize, winSize_);
-    platformArray_->push_back(someBlock_);
-
-    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (15 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 2), projectileSize, winSize_);
-    platformArray_->push_back(someBlock_);
-
-    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (20 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 2), projectileSize, winSize_);
-    platformArray_->push_back(someBlock_);
-
-    someBlock_ = new Sprite(projectileTextureID_, makeVector2D(0 + (21 * projectileSize.x), projectileSize.y / 2 + projectileSize.y * 2), projectileSize, winSize_);
-    platformArray_->push_back(someBlock_);
-
-    // Collision Testing Sprite
-    
 }
 
 GameScreen::~GameScreen(){
@@ -268,6 +286,12 @@ void GameScreen::mouseEvent(int button, int action){
 }
 
 void GameScreen::render(){
+    int xOffset = 0;
+    int yOffset = 0;
+    if (player_->getPosition().x > 400){
+        xOffset -= player_->getPosition().x - 400;        
+    }
+
 
     // Background Render
     glBindVertexArray(backgroundVertexID_);
@@ -276,19 +300,35 @@ void GameScreen::render(){
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, backgroundIndices_);
 
-    background_->render();
+    background_->render(xOffset, yOffset);
+    
+    // Render Platform
+    glBindVertexArray(platformVertexID_);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, platformIndices_);
 
-    // Game Render
+    for (auto& it : *platformArray_)
+        it->render(xOffset);
 
+    // Render Player
     glBindVertexArray(playerVertexID_);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, playerIndices_);
 
-    // Render Player
+    
+    player_->render(xOffset);
 
-    player_->render();
+    // Render Clouds
+    glBindVertexArray(platformVertexID_);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, platformIndices_);
+
+    for (auto& it : *platformArray_)
+        it->render(xOffset);
 
     // Render Projectiles and Enemies (cause they share the same vertex currently)
 
@@ -297,14 +337,18 @@ void GameScreen::render(){
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, projectileIndices_);
 
+    for (auto& it : *enemyArray_)
+        it->render(xOffset);
+
+    /*
     for (auto& it : *platformArray_)
         it->render();
+        */
 
     for (auto& it : *projectileArray_)
-        it->render();
+        it->render(xOffset);
 
-    for (auto& it : *enemyArray_)
-        it->render();
+
 
     // Overlay Render
 
@@ -335,10 +379,13 @@ void GameScreen::update(){
     player_->setObjects(nearbyObjects);
 
     player_->update();
-    //playerPhysics();
 
-    // Checks if the players or projectiles collides with the enemy.
-    //checkForCollisions();
+    // Check if Player is alive, if not then do something
+    if (!player_->isAlive())
+    {
+        switchScreen_ = true;
+        screenIndex_ = 0;
+    }
 
     // Erase Enemies and Projectiles that are out of screen
     checkOutsideScreen();

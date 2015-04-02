@@ -110,7 +110,7 @@ void PlayerSprite::checkInput(){
     }
 
     // If the left array key is pressed then move the character left
-    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT) == GLFW_PRESS){
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT) == GLFW_PRESS && playerLeft > 0){
         if (facingRight_){
             facingRight_ = false;
 
@@ -214,9 +214,10 @@ void PlayerSprite::checkInput(){
 
         }
 
-        if (position_.y - height_/2 < 0){
-            y = 0;
-            setFalling(false);
+        // If the player's Y position is in the void, do something
+        if (position_.y - height_/2 < -height_){
+            // Will be replacing the above with death soon.
+            alive_ = false;
         }
     }
 
@@ -226,14 +227,19 @@ void PlayerSprite::checkInput(){
 
 PlayerSprite::PlayerSprite(GLfloat textureID, glm::vec2 position, glm::vec2 size, glm::vec2 windowSize)
 :Sprite(textureID, position, size, windowSize){
+    alive_ = true;
 }
 
 void PlayerSprite::setObjects(std::vector<Sprite*> objects){
     objects_ = objects;
 }
 
-void PlayerSprite::render(){
-    Sprite::render();
+bool PlayerSprite::isAlive(){
+    return alive_;
+}
+
+void PlayerSprite::render(int xOffset, int yOffset){
+    Sprite::render(xOffset, yOffset);
 }
 
 void PlayerSprite::update(){
