@@ -248,9 +248,11 @@ void PlayerSprite::update(){
 
     checkInput();
 
+    /*
     if (falling_)
         OutputDebugString("Falling\n");
     else
         OutputDebugString("Not Falling\n");
+    */
 }
 

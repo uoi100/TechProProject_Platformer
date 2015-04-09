@@ -35,6 +35,15 @@ private:
     GLuint platformIndices_;
     GLuint platformTextureID_;
 
+    // End Point
+    GLuint endPointVertexID_;
+    GLuint endPointBufferID_;
+    GLuint endPointIndices_;
+    GLuint endPointTextureID_;
+
+    Sprite* endPoint_;
+
+    // Arraylist of Sprites
     std::vector<Sprite*> *platformArray_;
     std::vector<Sprite*> *projectileArray_;
     std::vector<Sprite*> *enemyArray_;

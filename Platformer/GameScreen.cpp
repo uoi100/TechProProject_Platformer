@@ -204,6 +204,8 @@ void GameScreen::setupLevel(){
 
     platform = new Sprite(platformTextureID_, glm::vec2(platformSize.x / 2 + platformSize.x * 18, platformSize.y / 2 + platformSize.y * 4), platformSize, winSize_);
     platformArray_->push_back(platform);
+
+    endPoint_ = new Sprite(endPointTextureID_, glm::vec2(platformSize.x / 2 + platformSize.x * 18, platformSize.y / 2 + platformSize.y * 4 + 64), platformSize, winSize_);
 }
 
 
@@ -232,6 +234,11 @@ GameScreen::GameScreen(int width, int height) : Screen(width, height){
 
     platformArray_ = new std::vector < Sprite * > ;
 
+    // endPoint Setup
+    createVertex(&endPointVertexID_, &endPointBufferID_, &endPointIndices_, platformSize.x, platformSize.y + 64);
+    endPointTextureID_ = loadAndBufferImage("./Image/flagYellow.png", GL_TEXTURE0);
+
+    // Level Setup
     setupLevel();
 
     // Create Projectile Setup
@@ -293,7 +300,7 @@ void GameScreen::render(){
     }
 
 
-    // Background Render
+    // Background Render ( Sprites that are drawn behind the player )
     glBindVertexArray(backgroundVertexID_);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
@@ -320,6 +327,17 @@ void GameScreen::render(){
 
     
     player_->render(xOffset);
+
+    // Overlay ( Sprites that are drawn over the player )
+
+    // Render endPoint
+
+    glBindVertexArray(endPointVertexID_);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, endPointIndices_);
+
+    endPoint_->render(xOffset);
 
     // Render Clouds
     glBindVertexArray(platformVertexID_);
@@ -380,11 +398,18 @@ void GameScreen::update(){
 
     player_->update();
 
+    if (checkCollision(player_, endPoint_)){
+        switchScreen_ = true;
+        screenIndex_ = 0;
+        return;
+    }
+
     // Check if Player is alive, if not then do something
     if (!player_->isAlive())
     {
         switchScreen_ = true;
         screenIndex_ = 0;
+        return;
     }
 
     // Erase Enemies and Projectiles that are out of screen
