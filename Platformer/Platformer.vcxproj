@@ -72,7 +72,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BoundingBox.cpp" />
+    <ClCompile Include="CongratsScreen.cpp" />
     <ClCompile Include="CustomOpenGLWrapper.cpp" />
+    <ClCompile Include="GameoverScreen.cpp" />
     <ClCompile Include="GameScreen.cpp" />
     <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="GLSLFunctions.cpp" />
@@ -86,7 +88,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBox.h" />
+    <ClInclude Include="CongratsScreen.h" />
     <ClInclude Include="CustomOpenGLWrapper.h" />
+    <ClInclude Include="GameoverScreen.h" />
     <ClInclude Include="GameScreen.h" />
     <ClInclude Include="GameWindow.h" />
     <ClInclude Include="GLSLFunctions.h" />

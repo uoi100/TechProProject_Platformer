@@ -7,6 +7,14 @@
 
 #define Updates_Per_Second 60
 
+/*
+* @Author Calvin Truong Wesley Dale
+* @Version 1.0
+* @Description
+* The main program that creates the window and constantly calls its
+drawing functions.
+*/
+
 GameWindow* gameWindow;
 
 void error_callback(int error, const char* description);

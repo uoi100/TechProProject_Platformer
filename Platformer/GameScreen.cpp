@@ -1,6 +1,13 @@
 #include "GameScreen.h"
 
 /*
+* @Author Calvin Truong Wesley Dale
+* @Version 1.0
+* @Description
+* The Game screen where you actually play the game
+*/
+
+/*
 * Description: Adds enemies into the game
 */
 void GameScreen::addEnemy(){
@@ -400,7 +407,7 @@ void GameScreen::update(){
 
     if (checkCollision(player_, endPoint_)){
         switchScreen_ = true;
-        screenIndex_ = 0;
+        screenIndex_ = 3;
         return;
     }
 
@@ -408,7 +415,7 @@ void GameScreen::update(){
     if (!player_->isAlive())
     {
         switchScreen_ = true;
-        screenIndex_ = 0;
+        screenIndex_ = 2;
         return;
     }
 

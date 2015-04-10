@@ -1,7 +1,9 @@
-#include "GameWindow.h"
 #include <algorithm>
 #include <string>
 #include "GLSLFunctions.h"
+#include "GameWindow.h"
+#include "GameoverScreen.h"
+#include "CongratsScreen.h"
 
 /*
  *@Author Calvin Truong and Wesley Dale
@@ -200,6 +202,16 @@ void GameWindow::update(){
         else if (currentScreen->screenIndex() == 1){
             Screen *old = currentScreen;
             currentScreen = new GameScreen(width_, height_);
+            delete old;
+        }
+        else if (currentScreen->screenIndex() == 2){
+            Screen *old = currentScreen;
+            currentScreen = new GameoverScreen(width_, height_);
+            delete old;
+        }
+        else if (currentScreen->screenIndex() == 3){
+            Screen *old = currentScreen;
+            currentScreen = new CongratsScreen(width_, height_);
             delete old;
         }
         else if (currentScreen->screenIndex() == -1){

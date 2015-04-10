@@ -23,7 +23,7 @@ TitleScreen::TitleScreen(int width, int height): Screen(width,height){
 
     startBtn_ = new Sprite(startBtnID_,
         glm::vec2(winSize_.x/2, winSize_.y/2), glm::vec2( btnWidth, btnHeight),
-        glm::vec2(winSize_.x, winSize_.y)
+        glm::vec2(winSize_.x, winSize_.y)   
     );
 
     exitBtn_ = new Sprite(exitBtnID_,
@@ -64,11 +64,13 @@ void TitleScreen::mouseEvent(int button, int action){
         glfwGetCursorPos(glfwGetCurrentContext(), &xpos, &ypos);
         ypos = winSize_.y - ypos;
 
+        /* Debug
         std::stringstream ss;
         std::string line;
         ss << "X: " << xpos << "Y: " << ypos << std::endl;
         line = ss.str();
         OutputDebugString(line.c_str());
+        */
 
         if (checkButtonCollision(xpos, ypos, startBtn_))
         {
